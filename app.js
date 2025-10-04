@@ -61,6 +61,7 @@ app.use((req, res, next) => {
 // ... (Route imports remain the same)
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/user'));
+app.use('/admin', require('./routes/admin'));
 // app.use('/expenses', require('./routes/expense'));
 
 // --- SERVER START ---
