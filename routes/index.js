@@ -5,10 +5,14 @@ const { ensureAuthenticated } = require('../middleware/auth');
 
 // --- Public Routes ---
 
-// Root redirects to dashboard
+// Root Route (The Landing Page)
+// @route GET /
+// @desc Renders the public landing page.
 router.get('/', (req, res) => {
-    res.redirect('/dashboard');
+    // The landing page conditionally shows buttons based on if 'res.locals.user' exists.
+    res.render('landingpage', { title: 'Welcome' }); 
 });
+
 
 // Login Routes
 router.get('/login', authController.getLoginPage);
@@ -22,8 +26,9 @@ router.post('/signup', authController.handleSignup);
 router.get('/logout', authController.handleLogout);
 
 // --- Secured Dashboard ---
+// @route GET /dashboard
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
-    // Passes through if authenticated
+    // Renders the role-based dashboard for logged-in users
     res.render('dashboard', { title: 'Dashboard' });
 });
 

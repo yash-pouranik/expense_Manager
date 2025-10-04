@@ -1,0 +1,75 @@
+<%- include('../partials/messages') %>
+
+<div class="row mt-4">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Submit New Expense Claim</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Fill out the details for your expense claim. The amount can be different from the company's currency[cite: 18].</p>
+                <hr>
+
+                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <% errors.forEach(function(error) { %>
+                            <p class="mb-0"><%= error.msg %></p>
+                        <% }); %>
+                    </div>
+                <% } %>
+
+                <form action="/expenses" method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date of Expense [cite: 19]</label>
+                        <input type="date" class="form-control" id="date" name="date" required 
+                            value="<%= typeof date != 'undefined' ? date : new Date().toISOString().substring(0, 10) %>">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category [cite: 19]</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <% categories.forEach(function(cat) { %>
+                                <option value="<%= cat %>" 
+                                    <%= (typeof selectedCategory != 'undefined' && selectedCategory === cat) ? 'selected' : '' %>>
+                                    <%= cat %>
+                                </option>
+                            <% }); %>
+                            </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Amount [cite: 18]</label>
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" required 
+                                value="<%= typeof amount != 'undefined' ? amount : '' %>" placeholder="e.g., 50.00">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="currency" class="form-label">Currency [cite: 18]</label>
+                            <select class="form-select" id="currency" name="currency" required>
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="INR" selected>INR - Indian Rupee</option>
+                                </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description [cite: 19]</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required><%= typeof description != 'undefined' ? description : '' %></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="receipt" class="form-label">Receipt Upload (Optional)</label>
+                        <input type="file" class="form-control" id="receipt" name="receipt" disabled>
+                        <small class="form-text text-muted">OCR for receipts is an additional feature[cite: 46, 47].</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success me-2">Submit Expense Claim</button>
+                    <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
