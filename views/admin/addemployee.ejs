@@ -1,0 +1,34 @@
+<h2 class="mb-4">Add New Employee</h2>
+
+<% if (typeof errors !== 'undefined') { %>
+  <%- include('../partials/messages.ejs') %>
+<% } %>
+
+<form action="/admin/add/employee" method="POST">
+  <input type="hidden" name="role" value="Employee"> 
+
+  <div class="mb-3">
+    <label for="name" class="form-label">Full Name</label>
+    <input type="text" class="form-control" id="name" name="username" value="<%= typeof name != 'undefined' ? name : '' %>" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="email" name="email" value="<%= typeof email != 'undefined' ? email : '' %>" required>
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" id="password" name="password" required minlength="6">
+  </div>
+
+  <div class="mb-3">
+    <label for="password2" class="form-label">Confirm Password</label>
+    <input type="password" class="form-control" id="password2" name="password2" required minlength="6">
+  </div>
+
+  
+  
+  <button type="submit" class="btn btn-primary">Create Employee</button>
+  <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+</form>
