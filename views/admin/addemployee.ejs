@@ -1,8 +1,6 @@
 <h2 class="mb-4">Add New Employee</h2>
 
-<% if (typeof errors !== 'undefined') { %>
-  <%- include('../partials/messages.ejs') %>
-<% } %>
+
 
 <form action="/admin/add/employee" method="POST">
   <input type="hidden" name="role" value="Employee"> 
