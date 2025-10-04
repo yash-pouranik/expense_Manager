@@ -92,17 +92,6 @@
                         </li>
                     <% } %>
                     
-                    <% if (user.role === 'Admin') { %>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle animated-link" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-sliders-h text-role-accent-admin me-1"></i> System
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                <li><a class="dropdown-item" href="/users/new">Manage Users</a></li>
-                                <li><a class="dropdown-item" href="/rules/config">Config Rules</a></li>
-                            </ul>
-                        </li>
-                    <% } %>
                 <% } %>
             </ul>
             
