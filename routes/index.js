@@ -1,36 +1,27 @@
-
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const dashboardController = require('../controllers/dashboardController'); // Make sure this is imported
 const { ensureAuthenticated } = require('../middleware/auth');
 
 // --- Public Routes ---
 
 // Root Route (The Landing Page)
-// @route GET /
-// @desc Renders the public landing page.
 router.get('/', (req, res) => {
-    // The landing page conditionally shows buttons based on if 'res.locals.user' exists.
-    res.render('landingpage', { title: 'Welcome' }); 
+    res.render('landing', { title: 'Welcome' }); 
 });
 
-
-// Login Routes
+// Login/Signup/Logout routes...
 router.get('/login', authController.getLoginPage);
 router.post('/login', authController.handleLogin);
-
-// Signup Routes (Creates the initial Company and Admin)
 router.get('/signup', authController.getSignupPage);
 router.post('/signup', authController.handleSignup);
-
-// Logout Route
 router.get('/logout', authController.handleLogout);
+
 
 // --- Secured Dashboard ---
 // @route GET /dashboard
-router.get('/dashboard', ensureAuthenticated, (req, res) => {
-    // Renders the role-based dashboard for logged-in users
-    res.render('dashboard', { title: 'Dashboard' });
-});
+// CRITICAL FIX: Direct the route to the controller function
+router.get('/dashboard', ensureAuthenticated, dashboardController.getDashboard);
 
 module.exports = router;
