@@ -21,7 +21,7 @@
                         <select name="managerId" id="managerId" class="form-select" required>
                             <option value="" disabled selected>-- Choose a Manager --</option>
                             <% managers.forEach(manager => { %>
-                                <option value="<%= manager.username %>" style="color: black !important;"><%= manager.name %></option>
+                                <option value="<%= manager.username %>" style="color: black !important;"><%= manager.username %></option>
                             <% }) %>
                         </select>
                     </div>
