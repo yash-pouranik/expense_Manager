@@ -1,13 +1,13 @@
-
+<%- include('../partials/messages') %>
 
 <div class="row mt-4">
     <div class="col-lg-8 mx-auto">
         <div class="card shadow">
             <div class="card-header bg-success text-white">
-                <h4 class="mb-0"><i class="fas fa-file-invoice me-2"></i> Submit New Expense Claim</h4>
+                <h4 class="mb-0">Submit New Expense Claim</h4>
             </div>
             <div class="card-body">
-                <p class="text-muted">Fill out the details for your expense claim. The amount can be in any currency [cite: 18-19].</p>
+                <p class="text-muted">Fill out the details for your expense claim. The amount can be different from the company's currency.</p>
                 <hr>
 
                 <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
@@ -23,7 +23,6 @@
                     <!-- Expense Date -->
                     <div class="mb-3">
                         <label for="date" class="form-label">Date of Expense</label>
-                        <!-- Ensure default value is today's date for quick input -->
                         <input type="date" class="form-control" id="date" name="date" required 
                             value="<%= typeof date != 'undefined' ? date : new Date().toISOString().substring(0, 10) %>">
                     </div>
@@ -32,8 +31,8 @@
                     <div class="mb-3">
                         <label for="category" class="form-label">Category</label>
                         <select class="form-select" id="category" name="category" required>
-                            <option value="" disabled selected>Select Expense Category</option>
-                            <!-- Placeholder Categories from Controller -->
+                            <option value="" disabled selected>Select Category</option>
+                            <!-- Placeholder Categories -->
                             <% categories.forEach(function(cat) { %>
                                 <option value="<%= cat %>" 
                                     <%= (typeof selectedCategory != 'undefined' && selectedCategory === cat) ? 'selected' : '' %>>
@@ -53,6 +52,8 @@
                         <div class="col-md-6 mb-3">
                             <label for="currency" class="form-label">Currency</label>
                             <select class="form-select" id="currency" name="currency" required>
+                                <!-- CRITICAL FIX: Ensure value is passed for selection -->
+                                <option value="" disabled <%= (typeof currency == 'undefined' || currency == '') ? 'selected' : '' %>>Select Currency</option>
                                 <option value="USD" <%= (typeof currency != 'undefined' && currency === 'USD') ? 'selected' : '' %>>USD - US Dollar</option>
                                 <option value="EUR" <%= (typeof currency != 'undefined' && currency === 'EUR') ? 'selected' : '' %>>EUR - Euro</option>
                                 <option value="INR" <%= (typeof currency != 'undefined' && currency === 'INR') ? 'selected' : '' %>>INR - Indian Rupee</option>
@@ -62,15 +63,15 @@
 
                     <!-- Description -->
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description (What was the expense for?)</label>
+                        <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="3" required><%= typeof description != 'undefined' ? description : '' %></textarea>
                     </div>
                     
-                    <!-- OCR Feature Placeholder (Stretch Goal) -->
+                    <!-- Receipt Upload (Placeholder) -->
                     <div class="mb-3">
                         <label for="receipt" class="form-label">Receipt Upload (Optional)</label>
                         <input type="file" class="form-control" id="receipt" name="receipt" disabled>
-                        <small class="form-text text-muted">Receipt scanning (OCR) feature is not yet implemented.</small>
+                        <small class="form-text text-muted">OCR for receipts is an additional feature.</small>
                     </div>
 
                     <button type="submit" class="btn btn-success me-2">Submit Expense Claim</button>
