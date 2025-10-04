@@ -58,9 +58,9 @@ app.use((req, res, next) => {
 
 // --- ROUTE IMPORTS (Controller) ---
 // ... (Route imports remain the same)
-app.use('/', require('./routes/index'));
+// app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/user'));
-app.use('/expenses', require('./routes/expense'));
+// app.use('/expenses', require('./routes/expense'));
 
 // --- SERVER START ---
 app.listen(PORT, console.log(`Server started on port ${PORT}.`));
