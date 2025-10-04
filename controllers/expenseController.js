@@ -20,54 +20,35 @@ exports.getSubmitExpensePage = (req, res) => {
 // @desc    Handle the submission of a new expense claim
 // @route   POST /expenses
 exports.handleSubmitExpense = async (req, res) => {
-    const { amount, currency, category, description, date } = req.body;
-    const employeeId = req.user._id;
-    const companyId = req.user.company;
-    let errors = [];
-    
-    const categories = ['Travel', 'Meal', 'Accommodation', 'Office Supplies', 'Software'];
-
-    if (!amount || !currency || !category || !description || !date) {
-        errors.push({ msg: 'Please fill in all required expense fields.' });
-    }
-    const parsedAmount = parseFloat(amount);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-        errors.push({ msg: 'Amount must be a positive number.' });
-    }
-    
-    if (errors.length > 0) {
-        return res.render('expenses/submit', { 
-            title: 'Submit Expense Claim', 
-            categories,
-            errors, 
-            amount, 
-            currency, 
-            selectedCategory: category, 
-            description, 
-            date 
-        });
-    }
-
     try {
+        const { amount, category, description, date } = req.body;
+        
+        // Find the user who is submitting the expense to get their manager
+        const employee = await User.findById(req.user.id);
+        if (!employee || !employee.manager) {
+            req.flash('error_msg', 'Your manager is not assigned. Please contact Admin.');
+            return res.redirect('/expenses/submit');
+        }
+
         const newExpense = new Expense({
-            employee: employeeId,
-            company: companyId,
-            amount: parsedAmount,
-            currency,
+            user: req.user.id,
+            company: req.user.company, // Company ID user se lein
+            amount,
             category,
             description,
-            date: new Date(date),
-            status: 'Pending',
-            currentApprovalStep: 1 
+            date,
+            
+            // --- NEW LOGIC ---
+            // Set the first approver to the employee's manager
+            currentApprover: employee.manager 
         });
-        
-        await newExpense.save();
 
-        req.flash('success_msg', `Expense claim (${currency} ${parsedAmount}) submitted successfully and is awaiting manager approval.`);
-        res.redirect('/expenses/history'); 
-    } catch (dbErr) {
-        console.error('DB Error during expense submission:', dbErr);
-        req.flash('error_msg', 'A database error occurred during submission. Please check server logs.');
+        await newExpense.save();
+        req.flash('success_msg', 'Expense submitted for approval.');
+        res.redirect('/dashboard');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Something went wrong. Could not submit expense.');
         res.redirect('/expenses/submit');
     }
 };
