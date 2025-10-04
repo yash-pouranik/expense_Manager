@@ -58,8 +58,13 @@
             <div class="card stat-card shadow-sm" style="--stat-color: #28a745;">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Total Claims Value</h5>
+<<<<<<< HEAD
                     <p class="h3 mb-0 text-success">-- N/A --</p>
                     <small class="text-muted">In <%= company ? company.defaultCurrency : 'N/A' %></small>
+=======
+                    <p class="h1 mb-0 text-success">-- N/A --</p>
+                    <small class="text-muted">In <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %></small>
+>>>>>>> 55f709c7c79a4d1c23e11baeef9f7ab4802d129f
                 </div>
             </div>
         </div>

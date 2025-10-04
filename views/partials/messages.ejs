@@ -6,7 +6,7 @@
         // 2. Consolidate ALL Error Messages (Including Passport's default 'error' key)
         const userErrors = (error_msg && Array.isArray(error_msg) ? error_msg : (error_msg ? [error_msg] : [])).flat();
         const passportErrors = (error && Array.isArray(error) ? error : (error ? [error] : [])).flat();
-        const allErrors = [...new Set(userErrors.concat(passportErrors))]; // Deduplicate
+        const allErrors = userErrors.concat(passportErrors);
     %>
 
     <% if (allSuccess.length > 0) { %>

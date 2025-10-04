@@ -10,6 +10,12 @@ const EXCHANGE_RATES = {
     'INR': 83.2,
 };
 function convertCurrency(expenseCurrency, amount, targetCurrency) {
+    // CRITICAL FIX: Guard against undefined or null inputs
+    if (!expenseCurrency || !targetCurrency || typeof amount !== 'number') {
+        console.error(`Currency conversion input failed: Received invalid currency or amount.`);
+        return null;
+    }
+    
     if (!expenseCurrency || !targetCurrency) {
         console.error("Currency missing:", { expenseCurrency, targetCurrency });
         return amount; // fallback: original amount return
@@ -181,8 +187,10 @@ exports.getExpenseHistory = async (req, res) => {
 exports.getPendingApprovals = async (req, res) => {
     try {
         const currentUserId = req.user._id;
+        
         const company = await Company.findById(req.user.company);
-        const targetCurrency = company?.currency || 'USD';
+        // FIX 1: Use the correct model field 'defaultCurrency'
+        const targetCurrency = company?.defaultCurrency || 'USD';
 
         let pendingExpenses = [];
         if (req.user.role === 'Admin') {
