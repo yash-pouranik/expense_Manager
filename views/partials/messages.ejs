@@ -1,20 +1,30 @@
-<% if (success_msg && success_msg.length > 0) { %>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        <%= success_msg %>
-    </div>
-<% } %>
+<!-- filepath: c:\Users\kush8\OneDrive\Attachments\المستندات\WorkSpace\expense_Manager\views\partials\messages.ejs -->
+<div id="flash-message-container">
+    <% 
+        // 1. Consolidate Success Messages
+        const allSuccess = (success_msg && Array.isArray(success_msg) ? success_msg : (success_msg ? [success_msg] : [])).flat(); 
+        
+        // 2. Consolidate ALL Error Messages (Including Passport's default 'error' key)
+        const userErrors = (error_msg && Array.isArray(error_msg) ? error_msg : (error_msg ? [error_msg] : [])).flat();
+        const passportErrors = (error && Array.isArray(error) ? error : (error ? [error] : [])).flat();
+        const allErrors = [...new Set(userErrors.concat(passportErrors))]; // Deduplicate
+    %>
 
-<% if (error_msg && error_msg.length > 0) { %>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        <%= error_msg %>
-    </div>
-<% } %>
+    <% if (allSuccess.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <% allSuccess.forEach(function(msg) { %>
+                <p class="mb-0"><%= msg %></p>
+            <% }); %>
+        </div>
+    <% } %>
 
-<% if (error && error.length > 0) { %>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        <%= error %>
-    </div>
-<% } %>
+    <% if (allErrors.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <% allErrors.forEach(function(msg) { %>
+                <p class="mb-0"><%= msg %></p>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
