@@ -52,7 +52,6 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="currency" class="form-label">Currency</label>
-                            <!-- NOTE: Placeholder Currencies. Should integrate API later. -->
                             <select class="form-select" id="currency" name="currency" required>
                                 <option value="USD" <%= (typeof currency != 'undefined' && currency === 'USD') ? 'selected' : '' %>>USD - US Dollar</option>
                                 <option value="EUR" <%= (typeof currency != 'undefined' && currency === 'EUR') ? 'selected' : '' %>>EUR - Euro</option>

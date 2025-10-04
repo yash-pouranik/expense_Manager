@@ -1,0 +1,33 @@
+<h2 class="mt-4"><%= title %></h2>
+<%- include('../partials/messages') %>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">Assign a Manager to an Employee</h4>
+                <form action="/admin/assign-manager" method="POST">
+                    <div class="mb-3">
+                        <label for="employeeId" class="form-label">Select Employee</label>
+                        <select name="employeeId" id="employeeId" class="form-select" required>
+                            <option value="" disabled selected>-- Choose an Employee --</option>
+                            <% employees.forEach(employee => { %>
+                                <option value="<%= employee._id %>"><%= employee.name %> (<%= employee.email %>)</option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="managerId" class="form-label">Select Manager</label>
+                        <select name="managerId" id="managerId" class="form-select" required>
+                            <option value="" disabled selected>-- Choose a Manager --</option>
+                            <% managers.forEach(manager => { %>
+                                <option value="<%= manager.username %>" style="color: black !important;"><%= manager.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

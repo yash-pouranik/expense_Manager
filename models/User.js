@@ -1,25 +1,26 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-
     password: { type: String, required: true },
-    role: {
-        type: String,
-        enum: ['Admin', 'Manager', 'Employee'], // Roles defined 
-        default: 'Employee'
-    },
-    company: { // Links to the auto-created company 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company',
-        required: true
-    },
-    manager: { // For defining manager relationships [cite: 15]
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default: null
+    role: { type: String, enum: ['Employee', 'Manager', 'Admin'], default: 'Employee' },
+    company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
+    
+    // --- NEW FIELD ---
+    // Store the ObjectId of the user's manager. This will only be populated for Employees.
+    manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+});
+
+// Password hashing middleware (this should already be there)
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        return next();
     }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
 });
 
 module.exports = mongoose.model('User', userSchema);

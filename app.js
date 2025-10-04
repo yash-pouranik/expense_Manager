@@ -58,7 +58,10 @@ app.use((req, res, next) => {
 // --- ROUTE IMPORTS (Controller) ---
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/user'));
-app.use('/expenses', require('./routes/expense')); // <-- CRITICAL: Ensure this line is active
+app.use('/expenses', require('./routes/expense'));
+app.use('/admin', require('./routes/admin')); // <-- YEH LINE ADD KAREIN
+
+// <-- CRITICAL: Ensure this line is active
 
 // --- SERVER START ---
 app.listen(PORT, console.log(`Server started on port ${PORT}.`));
