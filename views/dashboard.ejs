@@ -14,7 +14,7 @@
 <div class="row mt-4">
     <div class="col-12">
         <div class="p-4 rounded shadow bg-white">
-            <h1 class="display-5 mb-1">Welcome, <%= user.name %>!</h1>
+            <h1 class="display-5 mb-1">Welcome, <%= user.username %>!</h1>
             <p class="lead text-muted mb-4">
                 You are logged in as **<%= user.role %>** for **<%= (typeof company !== 'undefined' && company) ? company.name : 'Loading Company...' %>** (Default Currency: <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %>).
             </p>
@@ -63,7 +63,7 @@
                 <div class="card-body">
                     <h5 class="card-title text-muted">Total Claims Value</h5>
                     <p class="h3 mb-0 text-success">-- N/A --</p>
-                     <small class="text-muted">In <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %></small>
+                    <small class="text-muted">In <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %></small>
                 </div>
             </div>
         </div>
@@ -79,16 +79,16 @@
             <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-primary">User Management</h5>
-                    <p class="card-text">Create and manage employees and managers.</p>
+                    <p class="card-text">Create and manage users.</p>
                     <a href="/admin/add/employee" class="btn btn-primary">Add Employee</a>
-                    <a href="/admin/add/manager" class="btn btn-primary">Add Manager</a>
+                    <a href="/admin/add/manager" class="btn btn-primary mt-2">Add Manager</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
-             <div class="card bg-light shadow-sm h-100">
+            <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-info">Assign Manager</h5>
+                    <h5 class="card-title text-info">Assign Roles</h5>
                     <p class="card-text">Assign a manager to an employee.</p>
                     <a href="/admin/assign-manager" class="btn btn-info">Assign Manager</a>
                 </div>
@@ -97,16 +97,64 @@
         <div class="col-md-4 mb-3">
             <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-info">Oversight</h5>
-                    <p class="card-text">Quick access to all pending company expenses.</p>
-                    <a href="/expenses/pending" class="btn btn-info">Review Pending (<%= (typeof stats !== 'undefined' && stats) ? stats.pendingApprovals : 'N/A' %>)</a>
+                    <h5 class="card-title text-secondary">Oversight</h5>
+                    <p class="card-text">Quick access to all pending expenses.</p>
+                    <a href="/expenses/pending" class="btn btn-secondary">Review Pending (<%= (typeof stats !== 'undefined' && stats) ? stats.pendingApprovals : 'N/A' %>)</a>
                 </div>
             </div>
         </div>
 
     <% } else if (user.role === 'Manager') { %>
-        <% } else { %>
-        <% } %>
+        <div class="col-md-6 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Pending Approvals</h5>
+                    <p class="card-text">Review claims submitted by your team.</p>
+                    <a href="/expenses/pending" class="btn btn-warning">Review Claims</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Team Insight</h5>
+                    <p class="card-text">View history for your managed employees.</p>
+                    <a href="/expenses/team-history" class="btn btn-secondary disabled">View Team Activity</a>
+                </div>
+            </div>
+        </div>
+
+    <% } else { %>
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card shadow-sm h-100" style="--stat-color: #28a745;">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Submit New Claim</h5>
+                    <p class="card-text">Quickly submit a new expense claim for approval.</p>
+                    <a href="/expenses/submit" class="btn btn-success">Submit Expense</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card shadow-sm h-100" style="--stat-color: #17a2b8;">
+                <div class="card-body">
+                    <h5 class="card-title text-info">My History</h5>
+                    <p class="card-text">Total Submitted: <strong><%= employeeStats.submitted %></strong></p>
+                    <a href="/expenses/history" class="btn btn-info">View My Claims</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card stat-card shadow-sm h-100" style="--stat-color: #0d6efd;">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Claim Status</h5>
+                    <p class="card-text">Approved: <strong><%= employeeStats.approved %></strong> | Rejected: <strong><%= employeeStats.rejected %></strong></p>
+                    <a href="/expenses/history?status=pending" class="btn btn-outline-primary">Track Status</a>
+                </div>
+            </div>
+        </div>
+    <% } %>
 </div>
 
 
@@ -117,12 +165,16 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <% managers.forEach(manager => { %>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <%= manager.name %>
-                                <span class="badge bg-primary rounded-pill"><%= manager.email %></span>
-                            </li>
-                        <% }) %>
+                        <% if (managers && managers.length > 0) { %>
+                            <% managers.forEach(manager => { %>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <%= manager.name %>
+                                    <span class="badge bg-primary rounded-pill"><%= manager.email %></span>
+                                </li>
+                            <% }) %>
+                        <% } else { %>
+                            <li class="list-group-item">No managers found.</li>
+                        <% } %>
                     </ul>
                 </div>
             </div>
@@ -133,12 +185,16 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <% employees.forEach(employee => { %>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <%= employee.name %>
-                                <span class="badge bg-secondary rounded-pill"><%= employee.email %></span>
-                            </li>
-                        <% }) %>
+                        <% if (employees && employees.length > 0) { %>
+                            <% employees.forEach(employee => { %>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <%= employee.name %>
+                                    <span class="badge bg-secondary rounded-pill"><%= employee.email %></span>
+                                </li>
+                            <% }) %>
+                        <% } else { %>
+                            <li class="list-group-item">No employees found.</li>
+                        <% } %>
                     </ul>
                 </div>
             </div>
