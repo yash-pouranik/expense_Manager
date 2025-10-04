@@ -85,7 +85,7 @@ exports.postAddManager = (req, res) => {
                     // Naye user ko database mein save karein
                     newUser.save()
                         .then(user => {
-                            req.flash('success_msg', 'Employee added successfully');
+                            req.flash('success_msg', 'Manager added successfully');
                             res.redirect('/dashboard'); // Ya kisi aur page par redirect karein
                         })
                         .catch(err => console.log(err));
