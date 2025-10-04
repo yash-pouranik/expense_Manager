@@ -1,3 +1,4 @@
+<%- include('../partials/messages') %>
 
 <div class="row mt-5">
     <div class="col-md-6 mx-auto">
@@ -31,7 +32,6 @@
                         <label for="defaultCurrency" class="form-label">Default Company Currency</label>
                         <select class="form-select" id="defaultCurrency" name="defaultCurrency" required>
                             <option value="" disabled selected>Select Currency</option>
-                            <!-- Placeholder Currencies -->
                             <option value="USD" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'USD') ? 'selected' : '' %>>USD - US Dollar</option>
                             <option value="EUR" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'EUR') ? 'selected' : '' %>>EUR - Euro</option>
                             <option value="INR" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'INR') ? 'selected' : '' %>>INR - Indian Rupee</option>
@@ -48,6 +48,14 @@
                         <input type="text" class="form-control" id="username" name="username" 
                             value="<%= typeof username != 'undefined' ? username : '' %>" required>
                     </div>
+                    
+                    <!-- FIX: ADDED EMAIL FIELD -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Admin Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                            value="<%= typeof email != 'undefined' ? email : '' %>" required>
+                    </div>
+                    <!-- END FIX -->
 
                     <!-- Password -->
                     <div class="mb-3">
