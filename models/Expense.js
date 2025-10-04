@@ -8,15 +8,17 @@ const approvalHistorySchema = new mongoose.Schema({
 });
 
 const expenseSchema = new mongoose.Schema({
-    employee: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 🔑 FIXED
+    employee: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
     amount: { type: Number, required: true },
+    currency: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: String },
     date: { type: Date, required: true },
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
 
     currentApprover: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    currentApprovalStep: { type: Number, default: 1 },
     approvalHistory: [approvalHistorySchema]
 }, { timestamps: true });
 

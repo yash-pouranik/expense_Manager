@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const ApprovalRule = require('../models/ApprovalRule');
 
 // Form render karne ka GET route (yeh aapke paas pehle se hai)
 exports.getAddEmployeeForm = (req, res) => {
@@ -129,5 +130,49 @@ exports.postAssignManager = async (req, res) => {
         console.error(err);
         req.flash('error_msg', 'Failed to assign manager.');
         res.redirect('/admin/assign-manager');
+    }
+};
+
+exports.getApprovalWorkflowPage = async (req, res) => {
+    try {
+        const companyId = req.user.company;
+        const approvalRule = await ApprovalRule.findOne({ company: companyId });
+        res.render('admin/approvalWorkflow', {
+            title: 'Approval Workflow',
+            approvalRule: approvalRule || { steps: [] }
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Could not load page.');
+        res.redirect('/dashboard');
+    }
+};
+
+exports.postApprovalWorkflow = async (req, res) => {
+    try {
+        const companyId = req.user.company;
+        // The approver roles will be submitted as an array
+        const { approverRole } = req.body; 
+
+        let approvalRule = await ApprovalRule.findOne({ company: companyId });
+        if (!approvalRule) {
+            approvalRule = new ApprovalRule({ company: companyId });
+        }
+        
+        const steps = Array.isArray(approverRole) ? approverRole : [approverRole];
+
+        approvalRule.steps = steps.map((role, index) => ({
+            step: index + 1,
+            approverRole: role
+        }));
+        
+        await approvalRule.save();
+
+        req.flash('success_msg', 'Approval workflow saved successfully.');
+        res.redirect('/admin/approval-workflow');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Failed to save approval workflow.');
+        res.redirect('/admin/approval-workflow');
     }
 };

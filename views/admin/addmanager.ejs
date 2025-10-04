@@ -1,9 +1,5 @@
 <h2 class="mb-4">Add New Manager</h2>
 
-<% if (typeof errors !== 'undefined') { %>
-  <%- include('../partials/messages.ejs') %>
-<% } %>
-
 <form action="/admin/add/manager" method="POST">
   <input type="hidden" name="role" value="Manager"> 
 
