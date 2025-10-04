@@ -25,6 +25,10 @@ router.get('/assign-manager', ensureAuthenticated, adminController.getAssignMana
 // Handle the form submission
 router.post('/assign-manager', ensureAuthenticated, adminController.postAssignManager);
 
+// --- NEW ROUTES for Approval Workflow ---
+router.get('/approval-workflow', ensureAuthenticated, adminController.getApprovalWorkflowPage);
+router.post('/approval-workflow', ensureAuthenticated, adminController.postApprovalWorkflow);
+
 // Baaki ke user routes...
 // router.get('/login', ...);
 
