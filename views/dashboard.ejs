@@ -62,7 +62,7 @@
             <div class="card stat-card shadow-sm" style="--stat-color: #28a745;">
                 <div class="card-body">
                     <h5 class="card-title text-muted">Total Claims Value</h5>
-                    <p class="h3 mb-0 text-success">-- N/A --</p>
+                    <p class="h1 mb-0 text-success">-- N/A --</p>
                     <small class="text-muted">In <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %></small>
                 </div>
             </div>
@@ -105,7 +105,7 @@
         </div>
 
     <% } else if (user.role === 'Manager') { %>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
             <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-warning">Pending Approvals</h5>
