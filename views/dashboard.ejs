@@ -1,0 +1,91 @@
+<%- include('./partials/messages') %>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="p-4 rounded shadow-sm bg-white border border-secondary">
+            <h1 class="display-5 mb-3">Welcome, <%= user.username %>!</h1>
+            <p class="lead">You are logged in as a **<%= user.role %>** at <%= user.company.name || 'Your Company' %>.</p>
+            <hr>
+
+            <% if (user.role === 'Admin') { %>
+                <h3 class="text-primary mb-3">Admin Focus: Configuration & Oversight [cite: 44]</h3>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">User Management</h5>
+                                <p class="card-text">Create employees, managers, and define manager relationships [cite: 13-15].</p>
+                                <a href="/users/new" class="btn btn-primary">Go to User Creation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Approval Rules</h5>
+                                <p class="card-text">Define approval flows based on thresholds and conditional rules[cite: 5, 36].</p>
+                                <a href="/rules/config" class="btn btn-warning disabled">Configure Rules (To be built)</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Pending Approvals</h5>
+                                <p class="card-text">View and override all pending expenses in the company[cite: 44].</p>
+                                <a href="/expenses/pending" class="btn btn-info">View All Pending</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <% } else if (user.role === 'Manager') { %>
+                <h3 class="text-warning mb-3">Manager Focus: Team Approvals [cite: 44]</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Expenses Awaiting Approval</h5>
+                                <p class="card-text">View expenses submitted by your assigned team members[cite: 34].</p>
+                                <a href="/expenses/pending" class="btn btn-warning">Review Pending Approvals</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Team Expenses History</h5>
+                                <p class="card-text">View all expenses submitted by your team[cite: 44].</p>
+                                <a href="/expenses/team-history" class="btn btn-secondary disabled">View Team History (To be built)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <% } else { %>
+                <h3 class="text-success mb-3">Employee Focus: Submissions & Status [cite: 44]</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">New Expense Claim</h5>
+                                <p class="card-text">Submit a new claim with amount, category, description, and date [cite: 18-19].</p>
+                                <a href="/expenses/submit" class="btn btn-success">Submit Expense</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light shadow-sm h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">My Expense History</h5>
+                                <p class="card-text">View all your previous claims and check their approval status[cite: 20, 44].</p>
+                                <a href="/expenses/history" class="btn btn-info">View History</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+        </div>
+    </div>
+</div>
