@@ -6,8 +6,17 @@ const { ensureAuthenticated } = require('../middleware/auth'); // Assuming you h
 // GET route to show the form
 router.get('/add/employee', ensureAuthenticated, userController.getAddEmployeeForm);
 
+
+router.get('/add/manager', ensureAuthenticated, userController.getAddManagerForm);
+
+
+
 // POST route to handle form submission
 router.post('/add/employee', ensureAuthenticated, userController.postAddEmployee);
+
+
+router.post('/add/manager', ensureAuthenticated, userController.postAddManager);
+
 
 
 // Baaki ke user routes...
