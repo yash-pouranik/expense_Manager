@@ -19,6 +19,7 @@ router.post('/add/manager', ensureAuthenticated, userController.postAddManager);
 
 
 
+
 // Baaki ke user routes...
 // router.get('/login', ...);
 

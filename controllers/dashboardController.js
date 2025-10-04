@@ -20,6 +20,10 @@ exports.getDashboard = async (req, res) => {
         approved: 0,
         rejected: 0
     };
+    // --- NEW VARIABLES ---
+    // Initialize arrays for the lists of managers and employees
+    let managers = [];
+    let employees = [];
 
     if (!req.user || !req.user._id) {
         // Should be caught by ensureAuthenticated middleware, but safe check here.
@@ -29,9 +33,6 @@ exports.getDashboard = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        // --- CRITICAL FIX ---
-        // 1. Fetch the user explicitly to get a proper Mongoose Document instance.
-        // 2. Populate the company field immediately during the fetch.
         const userDocument = await User.findById(userId)
             .populate('company')
             .exec();
@@ -39,14 +40,12 @@ exports.getDashboard = async (req, res) => {
         if (!userDocument || !userDocument.company) {
             console.error(`ERROR: User or Company document not found for User ID: ${userId}`);
             req.flash('error_msg', 'Company data is missing. Please ensure your Admin account is linked correctly.');
-            return res.render('dashboard', { title: 'Dashboard', company, stats, employeeStats });
+            return res.render('dashboard', { title: 'Dashboard', company, stats, employeeStats, managers, employees });
         }
         
-        // Assign the populated company object
         company = userDocument.company;
         const companyId = company._id;
         const companyObjectId = new mongoose.Types.ObjectId(companyId);
-
 
         // 1. Fetch User Statistics (Aggregation)
         const userStats = await User.aggregate([
@@ -57,10 +56,17 @@ exports.getDashboard = async (req, res) => {
             }}
         ]);
 
-        // Process User Stats
         stats.totalUsers = userStats.reduce((acc, role) => acc + role.count, 0);
         stats.totalManagers = userStats.find(r => r._id === 'Manager')?.count || 0;
         stats.totalEmployees = userStats.find(r => r._id === 'Employee')?.count || 0;
+
+        // --- NEW LOGIC: FETCH FULL LISTS ---
+        // Fetch all users with the role 'Manager' for the company
+        managers = await User.find({ company: companyObjectId, role: 'Manager' });
+        
+        // Fetch all users with the role 'Employee' for the company
+        employees = await User.find({ company: companyObjectId, role: 'Employee' });
+        // --- END OF NEW LOGIC ---
 
         // 2. Fetch Expense Statistics
         const expenseStats = await Expense.aggregate([
@@ -92,14 +98,16 @@ exports.getDashboard = async (req, res) => {
         // Render the dashboard with all necessary data
         res.render('dashboard', {
             title: 'Dashboard',
-            company, // Full company object is now guaranteed
+            company,
             stats,
-            employeeStats
+            employeeStats,
+            managers,    // Pass managers list to the view
+            employees    // Pass employees list to the view
         });
 
     } catch (err) {
         console.error('Dashboard Data Fetch Error:', err);
         req.flash('error_msg', 'Failed to load dashboard data.');
-        res.render('dashboard', { title: 'Dashboard', company, stats, employeeStats });
+        res.render('dashboard', { title: 'Dashboard', company, stats, employeeStats, managers, employees });
     }
 };
