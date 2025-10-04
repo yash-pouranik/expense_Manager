@@ -77,7 +77,7 @@ exports.postAddManager = (req, res) => {
                 company: req.user.company
             });
 
-            // Password ko hash (encrypt) karein
+
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(newUser.password, salt, (err, hash) => {
                     if (err) throw err;
@@ -93,4 +93,41 @@ exports.postAddManager = (req, res) => {
             });
         }
     });
+};
+
+exports.getAssignManagerPage = async (req, res) => {
+    try {
+        // Sirf uss company ke users ko fetch karein jiska Admin login hai
+        const companyId = req.user.company;
+
+        const employees = await User.find({ company: companyId, role: 'Employee' });
+        const managers = await User.find({ company: companyId, role: 'Manager' });
+
+        res.render('admin/assignManager', {
+            title: 'Assign Manager',
+            employees,
+            managers
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Could not load page.');
+        res.redirect('/dashboard');
+    }
+};
+
+// @desc    Handle the form submission for assigning a manager
+// @route   POST /admin/assign-manager
+exports.postAssignManager = async (req, res) => {
+    try {
+        const { employeeId, managerId } = req.body;
+
+        await User.findByIdAndUpdate(employeeId, { manager: managerId });
+        
+        req.flash('success_msg', 'Manager assigned successfully.');
+        res.redirect('/admin/assign-manager');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Failed to assign manager.');
+        res.redirect('/admin/assign-manager');
+    }
 };
