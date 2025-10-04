@@ -1,7 +1,6 @@
 const Expense = require('../models/Expense');
 const User = require('../models/User');
 const Company = require('../models/Company');
-const ApprovalRule = require('../models/ApprovalRule');
 
 // --- FIXED EXCHANGE RATES ---
 const EXCHANGE_RATES = {
@@ -125,41 +124,27 @@ exports.handleSubmitExpense = async (req, res) => {
 
     try {
         const employee = await User.findById(employeeId);
-        const approvalRule = await ApprovalRule.findOne({ company: companyId });
-
-        if (!approvalRule || !approvalRule.steps || approvalRule.steps.length === 0) {
-            req.flash('error_msg', 'No approval workflow is defined for your company. Please contact Admin.');
-            return res.redirect('/expenses/submit');
-        }
-
-        const firstStep = approvalRule.steps.find(step => step.step === 1);
-        if (!firstStep) {
-            req.flash('error_msg', 'The approval workflow is not configured correctly. Please contact Admin.');
-            return res.redirect('/expenses/submit');
-        }
-
-        const firstApprover = await User.findOne({ company: companyId, role: firstStep.approverRole });
-        if (!firstApprover) {
-            req.flash('error_msg', `No user found with the role of ${firstStep.approverRole} to approve the expense. Please contact Admin.`);
+        if (!employee || !employee.manager) {
+            req.flash('error_msg', 'Your manager is not assigned. Please contact Admin.');
             return res.redirect('/expenses/submit');
         }
 
         const newExpense = new Expense({
             employee: req.user._id,
             company: companyId,
-            amount: parseFloat(amount),
+            amount: parsedAmount,
             currency,
             category,
             description,
             date: new Date(date),
             status: 'Pending',
             currentApprovalStep: 1,
-            currentApprover: firstApprover._id,
+            currentApprover: employee.manager,
             approvalHistory: [],
         });
 
         await newExpense.save();
-        req.flash('success_msg', `Expense claim (${currency} ${amount}) submitted successfully and is awaiting approval.`);
+        req.flash('success_msg', `Expense claim (${currency} ${parsedAmount}) submitted successfully and is awaiting manager approval.`);
         res.redirect('/expenses/history');
     } catch (err) {
         console.error('Error submitting expense:', err);
@@ -212,15 +197,11 @@ exports.getPendingApprovals = async (req, res) => {
             pendingExpenses = await Expense.find({ company: company._id, status: 'Pending' })
                 .populate('employee', 'username email');
         } else if (req.user.role === 'Manager') {
-            // Managers should only see expenses that are at their approval step
             const teamEmployees = await User.find({ manager: currentUserId }).select('_id');
             const teamIds = teamEmployees.map(e => e._id);
 
-            pendingExpenses = await Expense.find({ 
-                employee: { $in: teamIds }, 
-                status: 'Pending',
-                currentApprover: currentUserId
-            }).populate('employee', 'username email');
+            pendingExpenses = await Expense.find({ employee: { $in: teamIds }, status: 'Pending' })
+                .populate('employee', 'username email');
         }
 
         for (let expense of pendingExpenses) {
@@ -262,43 +243,20 @@ exports.handleApprovalAction = async (req, res) => {
             return res.redirect('/expenses/pending');
         }
 
+        expense.status = action === 'approve' ? 'Approved' : 'Rejected';
+
         expense.approvalHistory.push({
             approver: approverId,
             step: expense.currentApprovalStep,
-            status: action === 'approve' ? 'Approved' : 'Rejected',
+            status: expense.status,
             comments,
             approvedOn: new Date(),
         });
 
-        if (action === 'reject') {
-            expense.status = 'Rejected';
-            expense.currentApprover = null;
-            await expense.save();
-            req.flash('success_msg', `Expense claim ${expenseId} was successfully Rejected.`);
-            return res.redirect('/expenses/pending');
-        }
-
-        const approvalRule = await ApprovalRule.findOne({ company: expense.company });
-        const nextStepNumber = expense.currentApprovalStep + 1;
-        const nextStep = approvalRule.steps.find(step => step.step === nextStepNumber);
-
-        if (nextStep) {
-            const nextApprover = await User.findOne({ company: expense.company, role: nextStep.approverRole });
-            if (!nextApprover) {
-                req.flash('error_msg', `No user found with the role of ${nextStep.approverRole} for the next approval step. Please contact Admin.`);
-                return res.redirect('/expenses/pending');
-            }
-            expense.currentApprovalStep = nextStepNumber;
-            expense.currentApprover = nextApprover._id;
-        } else {
-            // Last step of approval
-            expense.status = 'Approved';
-            expense.currentApprover = null;
-        }
-
+        expense.currentApprovalStep = 0; // mark process complete
         await expense.save();
 
-        req.flash('success_msg', `Expense claim ${expenseId} was successfully ${action}d.`);
+        req.flash('success_msg', `Expense claim ${expenseId} was successfully ${expense.status}.`);
         res.redirect('/expenses/pending');
     } catch (err) {
         console.error('Error handling approval action:', err);

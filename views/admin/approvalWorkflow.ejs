@@ -1,0 +1,73 @@
+<div class="container mt-4">
+    <h2>Define Approval Workflow</h2>
+    <form action="/admin/approval-workflow" method="POST">
+        <div id="steps-container">
+            <% if (approvalRule && approvalRule.steps && approvalRule.steps.length > 0) { %>
+                <% approvalRule.steps.forEach(function(step, index) { %>
+                    <div class="form-group step-group mb-3">
+                        <label class="form-label"><strong>Step <%= index + 1 %></strong></label>
+                        <div class="input-group">
+                            <select name="approverRole" class="form-select">
+                                <option value="Manager" <%= step.approverRole === 'Manager' ? 'selected' : '' %>>Manager</option>
+                                <option value="Finance" <%= step.approverRole === 'Finance' ? 'selected' : '' %>>Finance</option>
+                                <option value="Director" <%= step.approverRole === 'Director' ? 'selected' : '' %>>Director</option>
+                            </select>
+                            <button type="button" class="btn btn-danger remove-step-btn">Remove</button>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="form-group step-group mb-3">
+                    <label class="form-label"><strong>Step 1</strong></label>
+                    <div class="input-group">
+                        <select name="approverRole" class="form-select">
+                            <option value="Manager">Manager</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Director">Director</option>
+                        </select>
+                        <button type="button" class="btn btn-danger remove-step-btn">Remove</button>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+        <button type="button" id="add-step-btn" class="btn btn-secondary mt-2">Add Step</button>
+        <button type="submit" class="btn btn-primary mt-2">Save Workflow</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stepsContainer = document.getElementById('steps-container');
+        let stepCount = stepsContainer.getElementsByClassName('step-group').length;
+
+        document.getElementById('add-step-btn').addEventListener('click', function() {
+            stepCount++;
+            const newStep = document.createElement('div');
+            newStep.classList.add('form-group', 'step-group', 'mb-3');
+            newStep.innerHTML = `
+                <label class="form-label"><strong>Step ${stepCount}</strong></label>
+                <div class="input-group">
+                    <select name="approverRole" class="form-select">
+                        <option value="Manager">Manager</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Director">Director</option>
+                    </select>
+                    <button type="button" class="btn btn-danger remove-step-btn">Remove</button>
+                </div>
+            `;
+            stepsContainer.appendChild(newStep);
+        });
+
+        stepsContainer.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('remove-step-btn')) {
+                e.target.closest('.step-group').remove();
+                // Re-label steps
+                const stepGroups = stepsContainer.getElementsByClassName('step-group');
+                stepCount = stepGroups.length;
+                for (let i = 0; i < stepGroups.length; i++) {
+                    stepGroups[i].querySelector('label').innerText = `Step ${i + 1}`;
+                }
+            }
+        });
+    });
+</script>

@@ -5,8 +5,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['Employee', 'Manager', 'Admin'], default: 'Employee' },
-    company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
+    role: { type: String, enum: ['Employee', 'Manager', 'Admin', 'Finance', 'Director'], default: 'Employee' },    company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
     
     // --- NEW FIELD ---
     // Store the ObjectId of the user's manager. This will only be populated for Employees.
