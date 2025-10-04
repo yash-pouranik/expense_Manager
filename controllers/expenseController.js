@@ -52,7 +52,6 @@ exports.handleSubmitExpense = async (req, res) => {
     }
 
     if (errors.length > 0) {
-        // Re-render form with errors
         const categories = ['Travel', 'Meal', 'Accommodation', 'Office Supplies', 'Software'];
         return res.render('expenses/submit', {
             title: 'Submit Expense Claim',
@@ -147,11 +146,9 @@ exports.getPendingApprovals = async (req, res) => {
         let pendingExpenses = [];
         const query = { company: company._id, status: 'Pending' };
 
-        // Admin, Finance, and Director see all pending expenses in the company.
         if (['Admin', 'Finance', 'Director'].includes(req.user.role)) {
             pendingExpenses = await Expense.find(query).populate('employee', 'username email');
         } 
-        // Managers only see expenses that are currently assigned to them for approval.
         else if (req.user.role === 'Manager') {
             query.currentApprover = currentUserId;
             pendingExpenses = await Expense.find(query).populate('employee', 'username email');
@@ -191,7 +188,6 @@ exports.handleApprovalAction = async (req, res) => {
             return res.redirect('/expenses/pending');
         }
 
-        // Add to history regardless of action
         expense.approvalHistory.push({
             approver: approverId,
             status: action === 'approve' ? 'Approved' : 'Rejected',
@@ -201,19 +197,17 @@ exports.handleApprovalAction = async (req, res) => {
         
         if (action === 'reject') {
             expense.status = 'Rejected';
-            expense.currentApprover = null; // No further approver
+            expense.currentApprover = null; 
             await expense.save();
             req.flash('success_msg', `Expense claim ${expenseId} was Rejected.`);
             return res.redirect('/expenses/pending');
         }
 
-        // --- Multi-Level Approval Logic ---
         const approvalRule = await ApprovalRule.findOne({ company: expense.company });
         const nextStepNumber = expense.currentApprovalStep + 1;
         const nextStep = approvalRule.steps.find(step => step.step === nextStepNumber);
 
         if (nextStep) {
-            // Find the next approver based on role
             const nextApprover = await User.findOne({ company: expense.company, role: nextStep.approverRole });
             if (!nextApprover) {
                 req.flash('error_msg', `No user with role '${nextStep.approverRole}' found for the next step. Contact Admin.`);
@@ -222,7 +216,6 @@ exports.handleApprovalAction = async (req, res) => {
             expense.currentApprovalStep = nextStepNumber;
             expense.currentApprover = nextApprover._id;
         } else {
-            // This was the final approval step
             expense.status = 'Approved';
             expense.currentApprover = null;
         }
