@@ -27,12 +27,13 @@ exports.getCreateUserPage = async (req, res) => {
 // @desc    Handle Admin creating a new Employee or Manager
 // @route   POST /users
 exports.handleCreateUser = async (req, res) => {
-    const { username, password, role, managerId } = req.body;
+    // UPDATED: Extract 'email' from the request body
+    const { username, email, password, role, managerId } = req.body;
     let errors = [];
 
     // Basic Validation
-    if (!username || !password || !role) {
-        errors.push({ msg: 'Please enter username, password, and role.' });
+    if (!username || !email || !password || !role) {
+        errors.push({ msg: 'Please enter username, email, password, and role.' });
     }
     if (password.length < 6) {
         errors.push({ msg: 'Password must be at least 6 characters.' });
@@ -66,15 +67,17 @@ exports.handleCreateUser = async (req, res) => {
             managers: managers,
             errors: errors,
             username,
+            email, // Pass email back on error
             selectedRole: role
         });
     }
 
     // Validation Passed: Check for existing username
     try {
-        const existingUser = await User.findOne({ username: username });
+        // Check for existing username OR email (if email is unique in model)
+        const existingUser = await User.findOne({ $or: [{ username: username }, { email: email }] });
         if (existingUser) {
-            req.flash('error_msg', 'Username already exists.');
+            req.flash('error_msg', 'Username or Email already exists.');
             return res.redirect('/users/new');
         }
 
@@ -83,6 +86,7 @@ exports.handleCreateUser = async (req, res) => {
         
         const newUser = new User({
             username: username,
+            email: email, // CRITICAL: Add the required email field
             password: passwordHash,
             role: role, // Assign and change roles [cite: 14]
             company: req.user.company,
@@ -96,7 +100,8 @@ exports.handleCreateUser = async (req, res) => {
 
     } catch (dbErr) {
         console.error('DB Error during user creation:', dbErr);
-        req.flash('error_msg', 'A database error occurred during user creation.');
+        // If validation fails in Mongoose (e.g., uniqueness), redirect with error
+        req.flash('error_msg', 'A database error occurred during user creation: ' + dbErr.message);
         res.redirect('/users/new');
     }
 };
