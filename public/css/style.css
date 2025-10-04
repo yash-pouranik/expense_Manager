@@ -1,0 +1,63 @@
+:root {
+  --primary-color: #4a69bd;
+  --secondary-color: #6c757d;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --body-bg-color: #f4f7fc;
+  --text-color: #212529;
+  --heading-color: #333;
+  --border-color: #dee2e6;
+  --link-color: var(--primary-color);
+  --link-hover-color: #3b5496;
+
+  /* Alert Colors */
+  --success-bg: #d1e7dd;
+  --success-text: #0f5132;
+  --error-bg: #f8d7da;
+  --error-text: #842029;
+  --info-bg: #cff4fc;
+  --info-text: #055160;
+
+  --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-headings: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius: 0.375rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Global & Body Styles (Sticky Footer Layout)
+   -------------------------------------------------------------------------- */
+
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensures body takes up at least the full viewport height */
+  margin: 0;
+  font-family: var(--font-family-base);
+  background-color: var(--body-bg-color);
+  color: var(--text-color);
+}
+
+main.container {
+  flex-grow: 1; /* Allows the main content area to grow and push the footer down */
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Footer
+   -------------------------------------------------------------------------- */
+.footer {
+  background-color: var(--dark-color);
+  color: var(--light-color);
+  padding: 0.5rem 0;
+  height: 50px;
+  text-align: center;
+  margin-top: auto; /* Pushes footer to the bottom of the flex container */
+}
+
+.footer a {
+  color: #fff;
+  font-weight: 600;
+}

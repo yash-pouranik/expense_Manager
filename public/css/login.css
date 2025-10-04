@@ -1,0 +1,171 @@
+/*
+ * ==========================================================================
+ * LOGIN FORM STYLES (Pure CSS)
+ * ========================================================================== */
+
+/* --- Variable Definitions --- */
+:root {
+  --primary-color: #4a69bd;
+  --primary-hover-color: #3b5496;
+  --success-color: #198754;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --body-bg-color: #f4f7fc;
+  --text-color: #495057;
+  --heading-color: #343a40;
+  --border-color: #ced4da;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --radius: 0.5rem;
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* --- Main Layout & Wrapper --- */
+.formwrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+
+  height: 400px;
+  box-sizing: border-box;
+}
+
+/* --- Form Card --- */
+.formcard {
+  background-color: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 25px var(--shadow-color);
+  overflow: hidden;
+  height: 400px;
+  
+}
+
+/* --- Card Header --- */
+.cardheader {
+  background: linear-gradient(135deg, var(--primary-color), #6a89cc);
+  color: var(--light-color);
+  padding: 1rem 2rem;
+  height: 60px;
+}
+
+.cardheader h4 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+/* --- Card Body --- */
+.cardbody {
+  padding: 1rem 2.5rem 1.5rem 2.5rem;
+}
+
+.cardbody .textmuted {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+.cardbody .line {
+  border: 0;
+  border-top: 1px solid black;
+  margin: 1rem 0;
+}
+
+/* --- Input Fields & Labels --- */
+.input .formlabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--heading-color);
+}
+
+/* Add space between the first input and the second label */
+.input .formlabel:not(:first-of-type) {
+  margin-top: 1.25rem;
+}
+
+.input .formcontrol {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  color: var(--text-color);
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+.input .formcontrol:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(74, 105, 189, 0.25);
+}
+
+/* --- Buttons --- */
+.buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem; /* Creates space between buttons */
+  margin-top: 2rem;
+}
+
+.btn-login,
+.btn-signup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 40px;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid transparent;
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+.btn-login {
+  color: #fff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-login:hover {
+  background-color: var(--primary-hover-color);
+  border-color: var(--primary-hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-signup {
+  border-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.btn-signup:hover {
+  background-color: var(--success-color);
+  color: #fff;
+}
+
+/* --- Alert Messages (for errors) --- */
+.alert {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.alert p {
+    margin: 0;
+}
+
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
