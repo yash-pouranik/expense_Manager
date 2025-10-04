@@ -2,6 +2,7 @@
 
 <style>
     .claim-card {
+        /* Ensure the border color reflects the pending state */
         border-left: 5px solid #ffc107; /* Warning color for Pending */
         transition: box-shadow 0.3s ease;
     }
@@ -12,12 +13,18 @@
         border-top: 1px dashed #ccc;
         padding-top: 1rem;
     }
+    .debug-status {
+        font-size: 0.7rem;
+        color: #dc3545;
+        font-weight: bold;
+    }
 </style>
 
 <div class="row mt-4">
     <div class="col-12">
-        <h2 class="mb-3 text-warning">Pending Expense Approvals</h2>
-        <p class="text-muted">Review claims submitted by <%= user.role === 'Manager' ? 'your assigned employees' : 'users across the company' %> [cite: 34, 44].</p>
+        <!-- Clarify that this list is strictly for PENDING items -->
+        <h2 class="mb-3 text-warning">Claims Awaiting Your Action</h2>
+        <p class="text-muted">Review claims submitted by <%= user.role === 'Manager' ? 'your assigned employees' : 'users across the company' %>. Only **Pending** requests are displayed here.</p>
         <hr>
 
         <% if (expenses && expenses.length > 0) { %>
@@ -25,6 +32,7 @@
                 <div class="card claim-card mb-4 shadow-sm">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
                         <span class="text-dark fw-bold">Claim ID: <%= expense._id.toString().substring(18).toUpperCase() %></span>
+                        <!-- Display the current status/step (should always be Pending here) -->
                         <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i> PENDING STEP <%= expense.currentApprovalStep %></span>
                     </div>
                     
@@ -36,6 +44,8 @@
                                 <small class="text-muted">Submitted on: <%= formatDate(expense.date) %> | Category: <%= expense.category %></small>
                                 <p class="mt-2 mb-1"><strong>Description:</strong></p>
                                 <p class="text-break"><%= expense.description %></p>
+                                <!-- DEBUG INFO: SHOWS RAW DB STATUS -->
+                                <p class="debug-status mt-2">DB Status (DEBUG): <%= expense.status %></p>
                             </div>
 
                             <!-- Submitter Details -->
@@ -74,6 +84,12 @@
                     </div>
                 </div>
             <% }); %>
+            
+            <!-- Navigation Button -->
+            <div class="mt-4 text-center">
+                <a href="/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i> Back to Dashboard</a>
+            </div>
+            
         <% } else { %>
             <div class="alert alert-info text-center mt-5 p-4">
                 <i class="fas fa-check-circle me-2"></i> Congratulations! There are currently no expenses awaiting your approval.

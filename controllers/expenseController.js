@@ -12,7 +12,6 @@ exports.getSubmitExpensePage = (req, res) => {
     res.render('expenses/submit', {
         title: 'Submit Expense Claim',
         categories: categories,
-        // Pass empty object for form data on initial load
         errors: [], 
         date: new Date().toISOString().substring(0, 10) 
     });
@@ -21,16 +20,13 @@ exports.getSubmitExpensePage = (req, res) => {
 // @desc    Handle the submission of a new expense claim
 // @route   POST /expenses
 exports.handleSubmitExpense = async (req, res) => {
-    // Extract data from the form (req.body)
     const { amount, currency, category, description, date } = req.body;
     const employeeId = req.user._id;
     const companyId = req.user.company;
     let errors = [];
     
-    // Fetch categories again for re-render if validation fails
     const categories = ['Travel', 'Meal', 'Accommodation', 'Office Supplies', 'Software'];
 
-    // Basic Validation [cite: 18-19]
     if (!amount || !currency || !category || !description || !date) {
         errors.push({ msg: 'Please fill in all required expense fields.' });
     }
@@ -39,12 +35,11 @@ exports.handleSubmitExpense = async (req, res) => {
         errors.push({ msg: 'Amount must be a positive number.' });
     }
     
-    // If validation fails, re-render the form with errors and previous inputs
     if (errors.length > 0) {
         return res.render('expenses/submit', { 
             title: 'Submit Expense Claim', 
-            categories: categories,
-            errors: errors, 
+            categories,
+            errors, 
             amount, 
             currency, 
             selectedCategory: category, 
@@ -54,24 +49,22 @@ exports.handleSubmitExpense = async (req, res) => {
     }
 
     try {
-        // Create new Expense document
         const newExpense = new Expense({
             employee: employeeId,
             company: companyId,
             amount: parsedAmount,
-            currency: currency,
-            category: category,
-            description: description,
+            currency,
+            category,
+            description,
             date: new Date(date),
             status: 'Pending',
-            currentApprovalStep: 1 // Start the workflow at step 1
+            currentApprovalStep: 1 
         });
         
         await newExpense.save();
 
         req.flash('success_msg', `Expense claim (${currency} ${parsedAmount}) submitted successfully and is awaiting manager approval.`);
         res.redirect('/expenses/history'); 
-
     } catch (dbErr) {
         console.error('DB Error during expense submission:', dbErr);
         req.flash('error_msg', 'A database error occurred during submission. Please check server logs.');
@@ -80,21 +73,31 @@ exports.handleSubmitExpense = async (req, res) => {
 };
 
 
-// @desc    View employee's expense history (Approved, Rejected)
+// @desc    View employee's expense history
 // @route   GET /expenses/history
 exports.getExpenseHistory = async (req, res) => {
     const userId = req.user._id;
+    let { status } = req.query; 
     
     try {
-        // Fetch expenses and populate the employee and company fields for detail display
-        const expenses = await Expense.find({ employee: userId })
+        let query = { employee: userId };
+
+        if (status) {
+            // Normalize status (case-insensitive match)
+            const normalized = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+            if (['Pending', 'Approved', 'Rejected'].includes(normalized)) {
+                query.status = normalized;
+            }
+        }
+
+        const expenses = await Expense.find(query)
             .populate('employee', 'username manager') 
             .sort({ date: -1 });
 
         res.render('expenses/history', { 
             title: 'My Expense History',
-            expenses: expenses,
-            // Helper function for display purposes in EJS
+            expenses,
+            currentFilter: status || 'All',
             formatDate: (date) => new Date(date).toLocaleDateString()
         });
     } catch (err) {
@@ -110,26 +113,20 @@ exports.getExpenseHistory = async (req, res) => {
 // @desc    View expenses waiting for approval
 // @route   GET /expenses/pending
 exports.getPendingApprovals = async (req, res) => {
-    // Manager/Admin views expenses waiting for approval [cite: 34, 44]
-
     try {
         let pendingExpenses = [];
         const currentUserId = req.user._id;
 
         if (req.user.role === 'Admin') {
-            // Admin views all pending expenses in the company
             pendingExpenses = await Expense.find({ 
-                company: req.user.company._id, // Use company ID if not populated
-                status: 'Pending' 
-            }).populate('employee', 'username email'); // Show details of the submitter
+                company: req.user.company._id,
+                status: 'Pending'
+            }).populate('employee', 'username email'); 
 
         } else if (req.user.role === 'Manager') {
-            // Manager views expenses submitted by their assigned employees
-            // 1. Find all employees managed by the current user
             const teamEmployees = await User.find({ manager: currentUserId }).select('_id');
             const teamIds = teamEmployees.map(e => e._id);
 
-            // 2. Find pending expenses submitted by those employees
             pendingExpenses = await Expense.find({
                 employee: { $in: teamIds },
                 status: 'Pending'
@@ -139,7 +136,6 @@ exports.getPendingApprovals = async (req, res) => {
         res.render('expenses/pending', { 
             title: 'Pending Approvals',
             expenses: pendingExpenses || [],
-            // Helper function for display purposes in EJS
             formatDate: (date) => new Date(date).toLocaleDateString()
         });
     } catch (err) {
@@ -152,9 +148,7 @@ exports.getPendingApprovals = async (req, res) => {
 // @desc    Approve/Reject an expense with comments
 // @route   POST /expenses/action/:id
 exports.handleApprovalAction = async (req, res) => {
-    // Simple 1-step approval process for the hackathon MVP
-
-    const { action, comments } = req.body; // 'action' will be 'approve' or 'reject'
+    const { action, comments } = req.body;
     const expenseId = req.params.id;
     const approverId = req.user._id;
     
@@ -171,19 +165,16 @@ exports.handleApprovalAction = async (req, res) => {
             return res.redirect('/expenses/pending');
         }
         
-        // Mark the expense status
         expense.status = action === 'approve' ? 'Approved' : 'Rejected';
         
-        // Record the action in the history [cite: 34]
         expense.approvalHistory.push({
             approver: approverId,
             step: expense.currentApprovalStep,
             status: expense.status,
-            comments: comments,
+            comments,
             approvedOn: new Date()
         });
         
-        // Set currentApprovalStep to 0 as the process is complete (in this MVP)
         expense.currentApprovalStep = 0; 
         
         await expense.save();

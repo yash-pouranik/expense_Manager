@@ -1,200 +1,190 @@
 <%- include('./partials/messages') %>
 
-<style>
-    .stat-card {
-        border-left: 5px solid var(--stat-color, #007bff);
-        transition: transform 0.2s ease;
-    }
-    .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-</style>
+
 
 <div class="row mt-4">
-    <div class="col-12">
-        <div class="p-4 rounded shadow bg-white">
-            <h1 class="display-5 mb-1">Welcome, <%= user.username %>!</h1>
-            <p class="lead text-muted mb-4">
-                You are logged in as **<%= user.role %>** for **<%= (typeof company !== 'undefined' && company) ? company.name : 'Loading Company...' %>** (Default Currency: <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %>).
-            </p>
-            <hr>
-        </div>
-    </div>
+    <div class="col-12">
+        <div class="p-4 rounded shadow bg-white">
+            <h1 class="display-5 mb-1">Welcome, <%= user.username %>!</h1>
+            <p class="lead text-muted mb-4">
+                You are logged in as **<%= user.role %>** for **<%= (typeof company !== 'undefined' && company) ? company.name : 'Loading Company...' %>** (Default Currency: <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %>).
+            </p>
+            <hr>
+        </div>
+    </div>
 </div>
 
 <% 
-    if (typeof stats !== 'undefined' && stats && (user.role === 'Admin' || user.role === 'Manager')) { 
+    if (typeof stats !== 'undefined' && stats && (user.role === 'Admin' || user.role === 'Manager')) { 
 %>
-    <h3 class="mt-4 mb-3 text-secondary">Company Overview</h3>
-    <div class="row">
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stat-card shadow-sm" style="--stat-color: #007bff;">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Total Users</h5>
-                    <p class="h1 mb-0"><%= stats.totalUsers %></p>
-                    <small class="text-success"><%= stats.totalManagers %> Managers, <%= stats.totalEmployees %> Employees</small>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stat-card shadow-sm" style="--stat-color: #ffc107;">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Pending Expenses</h5>
-                    <p class="h1 text-warning mb-0"><%= stats.pendingApprovals %></p>
-                    <small class="text-muted">Awaiting action</small>
-                </div>
-            </div>
-        </div>
+    <h3 class="mt-4 mb-3 text-secondary">Company Overview</h3>
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card stat-card shadow-sm" style="--stat-color: #007bff;">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Users</h5>
+                    <p class="h1 mb-0"><%= stats.totalUsers %></p>
+                    <small class="text-success"><%= stats.totalManagers %> Managers, <%= stats.totalEmployees %> Employees</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card stat-card shadow-sm" style="--stat-color: #ffc107;">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Pending Expenses</h5>
+                    <p class="h1 text-warning mb-0"><%= stats.pendingApprovals %></p>
+                    <small class="text-muted">Awaiting action</small>
+                </div>
+            </div>
+        </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stat-card shadow-sm" style="--stat-color: #17a2b8;">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Total Claims</h5>
-                    <p class="h1 mb-0"><%= stats.totalExpenses %></p>
-                    <small class="text-muted">Submitted company-wide</small>
-                </div>
-            </div>
-        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card stat-card shadow-sm" style="--stat-color: #17a2b8;">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Claims</h5>
+                    <p class="h1 mb-0"><%= stats.totalExpenses %></p>
+                    <small class="text-muted">Submitted company-wide</small>
+                </div>
+            </div>
+        </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="card stat-card shadow-sm" style="--stat-color: #28a745;">
-                <div class="card-body">
-                    <h5 class="card-title text-muted">Total Claims Value</h5>
-                    <p class="h3 mb-0 text-success">-- Currency Conversion Pending --</p>
-                    <small class="text-muted">In <%= company.defaultCurrency %></small>
-                </div>
-            </div>
-        </div>
-    </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card stat-card shadow-sm" style="--stat-color: #28a745;">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Claims Value</h5>
+                    <p class="h3 mb-0 text-success">-- Currency Conversion Pending --</p>
+                    <small class="text-muted">In <%= company.defaultCurrency %></small>
+                </div>
+            </div>
+        </div>
+    </div>
 <% } %>
 
 
 <h3 class="mt-4 mb-3 text-secondary"><%= user.role %> Actions</h3>
 <div class="row">
-    
-    <% if (user.role === 'Admin') { %>
-        <div class="col-md-4 mb-3">
-            <div class="card bg-light shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">User Management</h5>
-                    <p class="card-text">Create and manage employees and managers.</p>
-                    <a href="/admin/add/employee" class="btn btn-primary"><i class="fas fa-user-plus me-1"></i> Add Employee</a>
-                    <a href="/admin/add/manager" class="btn btn-primary"><i class="fas fa-user-plus me-1"></i> Add Manager</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card bg-light shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">Approval Rules</h5>
-                    <p class="card-text">Define custom multi-level and conditional approval flows.</p>
-                    <a href="/rules/config" class="btn btn-warning disabled"><i class="fas fa-cogs me-1"></i> Configure Rules</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3">
-            <div class="card bg-light shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-info">Oversight</h5>
-                    <p class="card-text">Quick access to all pending company expenses.</p>
-                    <a href="/expenses/pending" class="btn btn-info"><i class="fas fa-search me-1"></i> Review Pending (<%= (typeof stats !== 'undefined' && stats) ? stats.pendingApprovals : 'N/A' %>)</a>
-                </div>
-            </div>
-        </div>
+    
+    <% if (user.role === 'Admin') { %>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">User Management</h5>
+                    <p class="card-text">Create and manage employees and managers.</p>
+                    <a href="/users/new" class="btn btn-primary"><i class="fas fa-user-plus me-1"></i> Create User</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Approval Rules</h5>
+                    <p class="card-text">Define custom multi-level and conditional approval flows.</p>
+                    <a href="/rules/config" class="btn btn-warning disabled"><i class="fas fa-cogs me-1"></i> Configure Rules</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Oversight</h5>
+                    <p class="card-text">Quick access to all pending company expenses.</p>
+                    <a href="/expenses/pending" class="btn btn-info"><i class="fas fa-search me-1"></i> Review Pending (<%= (typeof stats !== 'undefined' && stats) ? stats.pendingApprovals : 'N/A' %>)</a>
+                </div>
+            </div>
+        </div>
 
-    <% } else if (user.role === 'Manager') { %>
-        <div class="col-md-6 mb-3">
-            <div class="card bg-light shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">Pending Approvals</h5>
-                    <p class="card-text">Review and take action on claims submitted by your team.</p>
-                    <a href="/expenses/pending" class="btn btn-warning"><i class="fas fa-check-double me-1"></i> Review Claims</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 mb-3">
-            <div class="card bg-light shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title text-secondary">Team Insight</h5>
-                    <p class="card-text">View history and statistics for your managed employees.</p>
-                    <a href="/expenses/team-history" class="btn btn-secondary disabled"><i class="fas fa-users me-1"></i> View Team Activity</a>
-                </div>
-            </div>
-        </div>
+    <% } else if (user.role === 'Manager') { %>
+        <div class="col-md-6 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Pending Approvals</h5>
+                    <p class="card-text">Review and take action on claims submitted by your team.</p>
+                    <a href="/expenses/pending" class="btn btn-warning"><i class="fas fa-check-double me-1"></i> Review Claims</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Team Insight</h5>
+                    <p class="card-text">View history and statistics for your managed employees.</p>
+                    <a href="/expenses/team-history" class="btn btn-secondary disabled"><i class="fas fa-users me-1"></i> View Team Activity</a>
+                </div>
+            </div>
+        </div>
 
-    <% } else { %>
-        <% 
-            if (typeof employeeStats !== 'undefined' && employeeStats) { 
-        %>
-            <div class="col-md-4 mb-3">
-                <div class="card stat-card shadow-sm h-100" style="--stat-color: #28a745;">
-                    <div class="card-body">
-                        <h5 class="card-title text-success">Submit New Claim</h5>
-                        <p class="card-text">Quickly submit a new expense claim for approval.</p>
-                        <a href="/expenses/submit" class="btn btn-success"><i class="fas fa-upload me-1"></i> Submit Expense</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <div class="card stat-card shadow-sm h-100" style="--stat-color: #17a2b8;">
-                    <div class="card-body">
-                        <h5 class="card-title text-info">My History</h5>
-                        <p class="card-text">Total Claims: **<%= employeeStats.submitted %>**</p>
-                        <a href="/expenses/history" class="btn btn-info"><i class="fas fa-history me-1"></i> View My Claims</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <div class="card stat-card shadow-sm h-100" style="--stat-color: #ffc107;">
-                    <div class="card-body">
-                        <h5 class="card-title text-warning">Pending Status</h5>
-                        <p class="card-text">Awaiting Approval: **<%= employeeStats.approved %>**</p>
-                        <a href="/expenses/history?status=pending" class="btn btn-outline-warning"><i class="fas fa-hourglass-half me-1"></i> Track Status</a>
-                    </div>
-                </div>
-            </div>
-        <% } else { %>
-            <p class="text-danger">Error loading employee statistics.</p>
-        <% } %>
-    <% } %>
+    <% } else { %>
+        <% 
+            if (typeof employeeStats !== 'undefined' && employeeStats) { 
+        %>
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card shadow-sm h-100" style="--stat-color: #28a745;">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">Submit New Claim</h5>
+                        <p class="card-text">Quickly submit a new expense claim for approval.</p>
+                        <a href="/expenses/submit" class="btn btn-success"><i class="fas fa-upload me-1"></i> Submit Expense</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card shadow-sm h-100" style="--stat-color: #17a2b8;">
+                    <div class="card-body">
+                        <h5 class="card-title text-info">My History</h5>
+                        <p class="card-text">Total Claims: **<%= employeeStats.submitted %>**</p>
+    146|                     <a href="/expenses/history" class="btn btn-info"><i class="fas fa-history me-1"></i> View My Claims</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card stat-card shadow-sm h-100" style="--stat-color: #ffc107;">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning">Pending Status</h5>
+                        <p class="card-text">Awaiting Approval: **<%= employeeStats.approved %>**</p>
+                        <a href="/expenses/history?status=pending" class="btn btn-outline-warning"><i class="fas fa-hourglass-half me-1"></i> Track Status</a>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <p class="text-danger">Error loading employee statistics.</p>
+        <% } %>
+    <% } %>
 </div>
 
 <% if (user.role === 'Admin') { %>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <h3 class="text-secondary">Managers</h3>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <% managers.forEach(manager => { %>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <%= manager.name %>
-                                <span class="badge bg-primary rounded-pill"><%= manager.email %></span>
-                            </li>
-                        <% }) %>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3 class="text-secondary">Managers</h3>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <% managers.forEach(manager => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <%= manager.username %>
+                                <span class="badge bg-primary rounded-pill"><%= manager.email %></span>
+                            </li>
+    178|                         <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-        <div class="col-md-6">
-            <h3 class="text-secondary">Employees</h3>
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <% employees.forEach(employee => { %>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <%= employee.name %>
-                                <span class="badge bg-secondary rounded-pill"><%= employee.email %></span>
-                            </li>
-                        <% }) %>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+        <div class="col-md-6">
+            <h3 class="text-secondary">Employees</h3>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <% employees.forEach(employee => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <%= employee.username %>
+                                <span class="badge bg-secondary rounded-pill"><%= employee.email %></span>
+                            </li>
+    193|                         <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 <% } %>
