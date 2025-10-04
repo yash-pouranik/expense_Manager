@@ -7,7 +7,7 @@
                 <h4 class="mb-0">Company Setup & Admin Signup</h4>
             </div>
             <div class="card-body">
-                <p class="text-muted">Create the first Admin user. A new Company will be auto-created for this environment.</p>
+                <p class="text-muted">Create the first Admin user and define the company's default currency.</p>
                 <hr>
 
                 <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
@@ -20,22 +20,48 @@
 
                 <form action="/signup" method="POST">
                     
+                    <!-- Company Name -->
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="companyName" name="companyName" 
+                            value="<%= typeof companyName != 'undefined' ? companyName : '' %>" required>
+                    </div>
+
+                    <!-- Company Default Currency -->
+                    <div class="mb-3">
+                        <label for="defaultCurrency" class="form-label">Default Company Currency</label>
+                        <select class="form-select" id="defaultCurrency" name="defaultCurrency" required>
+                            <option value="" disabled selected>Select Currency</option>
+                            <!-- Placeholder Currencies -->
+                            <option value="USD" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'USD') ? 'selected' : '' %>>USD - US Dollar</option>
+                            <option value="EUR" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'EUR') ? 'selected' : '' %>>EUR - Euro</option>
+                            <option value="INR" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'INR') ? 'selected' : '' %>>INR - Indian Rupee</option>
+                            <option value="GBP" <%= (typeof defaultCurrency != 'undefined' && defaultCurrency === 'GBP') ? 'selected' : '' %>>GBP - British Pound</option>
+                        </select>
+                        <small class="form-text text-muted">All expense amounts will be converted to this currency for management.</small>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">Admin User Details</h5>
+
+                    <!-- Username (used as Admin ID) -->
                     <div class="mb-3">
                         <label for="username" class="form-label">Admin Username</label>
                         <input type="text" class="form-control" id="username" name="username" 
                             value="<%= typeof username != 'undefined' ? username : '' %>" required>
                     </div>
 
+                    <!-- Password -->
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
 
+                    <!-- Confirm Password -->
                     <div class="mb-3">
                         <label for="password2" class="form-label">Confirm Password</label>
                         <input type="password" class="form-control" id="password2" name="password2" required>
                     </div>
-
+                    
                     <button type="submit" class="btn btn-success me-2">Register Company & Admin</button>
                     <a href="/login" class="btn btn-secondary">Already have an account? Login</a>
                 </form>
