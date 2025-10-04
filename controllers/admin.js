@@ -3,17 +3,17 @@ const bcrypt = require('bcrypt');
 
 // Form render karne ka GET route (yeh aapke paas pehle se hai)
 exports.getAddEmployeeForm = (req, res) => {
-    res.render('users/new', { title: 'Add New Employee' });
+    res.render('admin/addemployee', { title: 'Add New Employee' });
 };
 
 // Form ka data handle karne ka POST route
 exports.postAddEmployee = (req, res) => {
-    const { name, email, password, role } = req.body;
+    const { username, email, password } = req.body;
 
     // Check karein ki saari fields bhari hui hain
-    if (!name || !email || !password || !role) {
+    if (!username || !email || !password ) {
         req.flash('error_msg', 'Please fill in all fields');
-        return res.redirect('/users/add/employee');
+        return res.redirect('/admin/add/employee');
     }
 
     User.findOne({ email: email }).then(user => {
@@ -24,10 +24,10 @@ exports.postAddEmployee = (req, res) => {
         } else {
             // Naya user banayein
             const newUser = new User({
-                name,
+                username,
                 email,
                 password,
-                role,
+                role : "Employee",
                 company: req.user.company
             });
 
