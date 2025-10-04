@@ -11,31 +11,23 @@ const EXCHANGE_RATES = {
     'INR': 83.2,
 };
 function convertCurrency(expenseCurrency, amount, targetCurrency) {
-<<<<<<< HEAD
     // CRITICAL FIX: Guard against undefined or null inputs
     if (!expenseCurrency || !targetCurrency || typeof amount !== 'number') {
         console.error(`Currency conversion input failed: Received invalid currency or amount.`);
         return null;
     }
     
-=======
     if (!expenseCurrency || !targetCurrency) {
         console.error("Currency missing:", { expenseCurrency, targetCurrency });
         return amount; // fallback: original amount return
     }
 
->>>>>>> 09f9c1a0342af5785af8c3df5e3a502b52b149f3
     const source = expenseCurrency.toUpperCase();
     const target = targetCurrency.toUpperCase();
 
     if (!EXCHANGE_RATES[source] || !EXCHANGE_RATES[target]) {
-<<<<<<< HEAD
-        console.error(`Currency conversion failed: Currencies not supported by mock rates: ${source} → ${target}`);
-        return null;
-=======
         console.error(`Currency conversion failed: ${source} → ${target}`);
         return amount; // fallback without conversion
->>>>>>> 09f9c1a0342af5785af8c3df5e3a502b52b149f3
     }
 
     const amountInUSD = amount / EXCHANGE_RATES[source];
