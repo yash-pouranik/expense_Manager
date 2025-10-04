@@ -1,5 +1,3 @@
-
-
 <style>
     .stat-card {
         border-left: 5px solid var(--stat-color, #007bff);
@@ -16,16 +14,14 @@
         <div class="p-4 rounded shadow bg-white">
             <h1 class="display-5 mb-1">Welcome, <%= user.username %>!</h1>
             <p class="lead text-muted mb-4">
-                You are logged in as **<%= user.role %>** for **<%= (typeof company !== 'undefined' && company) ? company.name : 'Loading Company...' %>** (Default Currency: <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %>).
+                You are logged in as <strong><%= user.role %></strong> for <strong><%= company ? company.name : 'Your Company' %></strong> (Default Currency: <%= company ? company.defaultCurrency : 'N/A' %>).
             </p>
             <hr>
         </div>
     </div>
 </div>
 
-<% 
-    if (typeof stats !== 'undefined' && stats && (user.role === 'Admin' || user.role === 'Manager')) { 
-%>
+<% if (user.role === 'Admin') { %>
     <h3 class="mt-4 mb-3 text-secondary">Company Overview</h3>
     <div class="row">
         <div class="col-lg-3 col-md-6 mb-4">
@@ -41,7 +37,7 @@
         <div class="col-lg-3 col-md-6 mb-4">
             <div class="card stat-card shadow-sm" style="--stat-color: #ffc107;">
                 <div class="card-body">
-                    <h5 class="card-title text-muted">Pending Expenses</h5>
+                    <h5 class="card-title text-muted">All Pending Expenses</h5>
                     <p class="h1 text-warning mb-0"><%= stats.pendingApprovals %></p>
                     <small class="text-muted">Awaiting action</small>
                 </div>
@@ -63,7 +59,7 @@
                 <div class="card-body">
                     <h5 class="card-title text-muted">Total Claims Value</h5>
                     <p class="h3 mb-0 text-success">-- N/A --</p>
-                    <small class="text-muted">In <%= (typeof company !== 'undefined' && company) ? company.defaultCurrency : 'N/A' %></small>
+                    <small class="text-muted">In <%= company ? company.defaultCurrency : 'N/A' %></small>
                 </div>
             </div>
         </div>
@@ -80,17 +76,20 @@
                 <div class="card-body">
                     <h5 class="card-title text-primary">User Management</h5>
                     <p class="card-text">Create and manage users.</p>
-                    <a href="/admin/add/employee" class="btn btn-primary">Add Employee</a>
-                    <a href="/admin/add/manager" class="btn btn-primary ">Add Manager</a>
+                    <a href="/admin/add/employee" class="btn btn-outline-primary btn-sm mb-1">Add Employee</a>
+                    <a href="/admin/add/manager" class="btn btn-outline-primary btn-sm mb-1">Add Manager</a>
+                    <a href="/admin/add/finance" class="btn btn-outline-primary btn-sm">Add Finance</a>
+                    <a href="/admin/add/director" class="btn btn-outline-primary btn-sm">Add Director</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
-            <div class="card bg-light shadow-sm h-100">
+             <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-info">Assign Roles</h5>
-                    <p class="card-text">Assign a manager to an employee.</p>
-                    <a href="/admin/assign-manager" class="btn btn-info">Assign Manager</a>
+                    <h5 class="card-title text-info">Workflow & Roles</h5>
+                     <p class="card-text">Define approval flows and assign roles.</p>
+                    <a href="/admin/approval-workflow" class="btn btn-info btn-sm">Manage Workflow</a>
+                    <a href="/admin/assign-manager" class="btn btn-info btn-sm">Assign Manager</a>
                 </div>
             </div>
         </div>
@@ -99,27 +98,27 @@
                 <div class="card-body">
                     <h5 class="card-title text-secondary">Oversight</h5>
                     <p class="card-text">Quick access to all pending expenses.</p>
-                    <a href="/expenses/pending" class="btn btn-secondary">Review Pending (<%= (typeof stats !== 'undefined' && stats) ? stats.pendingApprovals : 'N/A' %>)</a>
+                    <a href="/expenses/pending" class="btn btn-secondary">Review Pending (<%= stats.pendingApprovals || '0' %>)</a>
                 </div>
             </div>
         </div>
 
-    <% } else if (user.role === 'Manager') { %>
+    <% } else if (user.role === 'Manager' || user.role === 'Finance' || user.role === 'Director') { %>
         <div class="col-md-6 mb-3">
             <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title text-warning">Pending Approvals</h5>
-                    <p class="card-text">Review claims submitted by your team.</p>
-                    <a href="/expenses/pending" class="btn btn-warning">Review Claims</a>
+                    <p class="card-text">Review claims assigned to you for approval.</p>
+                    <a href="/expenses/pending" class="btn btn-warning">Review Claims (<%= stats.pendingApprovals || '0' %>)</a>
                 </div>
             </div>
         </div>
         <div class="col-md-6 mb-3">
             <div class="card bg-light shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title text-secondary">Team Insight</h5>
-                    <p class="card-text">View history for your managed employees.</p>
-                    <a href="/expenses/team-history" class="btn btn-secondary disabled">View Team Activity</a>
+                    <h5 class="card-title text-secondary">Approval History</h5>
+                    <p class="card-text">View claims you have already processed.</p>
+                    <a href="#" class="btn btn-secondary disabled">View History</a>
                 </div>
             </div>
         </div>
@@ -168,8 +167,8 @@
                         <% if (managers && managers.length > 0) { %>
                             <% managers.forEach(manager => { %>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <%= manager.name %>
-                                    <span class="badge text-muted"><%= manager.email %></span>
+                                    <%= manager.username %>
+                                    <span class="badge bg-light text-dark"><%= manager.email %></span>
                                 </li>
                             <% }) %>
                         <% } else { %>
@@ -188,8 +187,8 @@
                         <% if (employees && employees.length > 0) { %>
                             <% employees.forEach(employee => { %>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <%= employee.name %>
-                                    <span class="badge text-muted"><%= employee.email %></span>
+                                    <%= employee.username %>
+                                    <span class="badge bg-light text-dark"><%= employee.email %></span>
                                 </li>
                             <% }) %>
                         <% } else { %>

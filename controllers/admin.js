@@ -176,3 +176,74 @@ exports.postApprovalWorkflow = async (req, res) => {
         res.redirect('/admin/approval-workflow');
     }
 };
+// ... postAddManager function ke baad ...
+
+exports.getAddFinanceForm = (req, res) => {
+    res.render('admin/addfinance', { title: 'Add New Finance User' });
+};
+
+exports.postAddFinance = (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        req.flash('error_msg', 'Please fill in all fields');
+        return res.redirect('/admin/add/finance');
+    }
+
+    User.findOne({ email: email }).then(user => {
+        if (user) {
+            req.flash('error_msg', 'Email is already registered');
+            res.redirect('/admin/add/finance');
+        } else {
+            const newUser = new User({
+                username,
+                email,
+                password,
+                role: "Finance", // Role set to Finance
+                company: req.user.company
+            });
+
+            newUser.save()
+                .then(user => {
+                    req.flash('success_msg', 'Finance user added successfully');
+                    res.redirect('/dashboard');
+                })
+                .catch(err => console.log(err));
+        }
+    });
+};
+
+exports.getAddDirectorForm = (req, res) => {
+    res.render('admin/adddirector', { title: 'Add New Director' });
+};
+
+exports.postAddDirector = (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        req.flash('error_msg', 'Please fill in all fields');
+        return res.redirect('/admin/add/director');
+    }
+
+    User.findOne({ email: email }).then(user => {
+        if (user) {
+            req.flash('error_msg', 'Email is already registered');
+            res.redirect('/admin/add/director');
+        } else {
+            const newUser = new User({
+                username,
+                email,
+                password,
+                role: "Director", // Role set to Director
+                company: req.user.company
+            });
+
+            newUser.save()
+                .then(user => {
+                    req.flash('success_msg', 'Director added successfully');
+                    res.redirect('/dashboard');
+                })
+                .catch(err => console.log(err));
+        }
+    });
+};

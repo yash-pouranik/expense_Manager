@@ -45,5 +45,5 @@ exports.ensureRole = (roles = []) => {
 
 // Convenience middleware functions for specific roles
 exports.isAdmin = exports.ensureRole('Admin');
-exports.isManagerOrAdmin = exports.ensureRole(['Manager', 'Admin']);
+exports.isManagerOrAdmin = exports.ensureRole(['Manager', 'Admin', 'Finance', 'Director']);
 exports.isEmployee = exports.ensureRole('Employee');

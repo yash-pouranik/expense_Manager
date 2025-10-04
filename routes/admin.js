@@ -32,4 +32,17 @@ router.post('/approval-workflow', ensureAuthenticated, adminController.postAppro
 // Baaki ke user routes...
 // router.get('/login', ...);
 
+// ... postAssignManager route ke baad ...
+
+// --- Finance User Routes ---
+router.get('/add/finance', ensureAuthenticated, adminController.getAddFinanceForm);
+router.post('/add/finance', ensureAuthenticated, adminController.postAddFinance);
+
+// --- Director User Routes ---
+router.get('/add/director', ensureAuthenticated, adminController.getAddDirectorForm);
+router.post('/add/director', ensureAuthenticated, adminController.postAddDirector);
+
+module.exports = router;
+
+
 module.exports = router;
