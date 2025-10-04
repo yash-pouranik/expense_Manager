@@ -1,0 +1,62 @@
+<%- include('./partials/messages') %> 
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create New Employee or Manager</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">You are creating a new user for company <strong><%= user.company.name || 'Your Company' %></strong>. [cite_start]As an Admin, you can assign roles and define manager relationships [cite: 13-15].</p>
+                <hr>
+                
+                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <% errors.forEach(function(error) { %>
+                            <p class="mb-0"><%= error.msg %></p>
+                        <% }); %>
+                    </div>
+                <% } %>
+
+                <form action="/users" method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username (Email or ID)</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                            value="<%= typeof username != 'undefined' ? username : '' %>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Temporary Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="" disabled selected>Select Role</option>
+                            <option value="Employee" <%= (typeof selectedRole != 'undefined' && selectedRole === 'Employee') ? 'selected' : '' %>>Employee</option>
+                            <option value="Manager" <%= (typeof selectedRole != 'undefined' && selectedRole === 'Manager') ? 'selected' : '' %>>Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="managerDiv">
+                        <label for="managerId" class="form-label">Assign Manager (Required for Employees)</label>
+                        <select class="form-select" id="managerId" name="managerId">
+                            <option value="">-- No Manager --</option>
+                            <% managers.forEach(function(manager) { %>
+                                <option value="<%= manager._id %>">
+                                    <%= manager.username %> (<%= manager.role %>)
+                                </option>
+                            <% }); %>
+                        </select>
+                        <small class="form-text text-muted">Defines the manager relationship for the approval flow.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success me-2">Create User</button>
+                    <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

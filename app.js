@@ -1,63 +1,66 @@
+// --- DEPENDENCY IMPORTS ---
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const path = require('path');
+const expressLayouts = require('express-ejs-layouts'); // <-- NEW IMPORT
 
 // --- APP INITIALIZATION ---
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- CONFIGURATION IMPORTS (Model/DB) ---
-// 1. Database Connection (Mongoose)
 require('./config/mongoose');
-// 2. Passport Configuration (Authentication Logic)
 require('./config/passport')(passport);
 
 // --- MIDDLEWARE SETUP ---
 
-// 1. EJS View Engine Setup (View)
+// 1. EJS View Engine Setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public'))); // For CSS/JS/Images
 
-// 2. Body Parser (Handles incoming request data)
+// 2. Express EJS Layouts Setup <-- NEW SETUP
+app.use(expressLayouts);
+app.set('layout', 'layout'); // Tells the app to use 'views/layout.ejs' as the default master file
+
+// 3. Static Files
+app.use(express.static(path.join(__dirname, 'public'))); 
+
+// 4. Body Parser
 app.use(express.urlencoded({ extended: true }));
 
-// 3. Session Middleware
+// 5. Session Middleware
+// ... (session setup remains the same)
 app.use(session({
     secret: process.env.SESSION_SECRET || 'hackathon_secret',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8 hours for the hackathon
+    cookie: { maxAge: 1000 * 60 * 60 * 8 } 
 }));
 
-// 4. Passport (Authentication) Middleware
+// 6. Passport (Authentication) Middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 5. Connect-Flash Middleware
+// 7. Connect-Flash Middleware
 app.use(flash());
 
-// 6. Custom Middleware to set global EJS variables
+// 8. Custom Middleware to set global EJS variables
 app.use((req, res, next) => {
-    // Flash messages
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
-    
-    // User info (available in all views)
     res.locals.user = req.user || null;
-    
     next();
 });
 
 // --- ROUTE IMPORTS (Controller) ---
-// Routes will now link to Controller functions (e.g., /routes/index.js links to /controllers/authController.js)
-app.use('/', require('./routes/index'));        // Public routes (Login, Signup)
-app.use('/users', require('./routes/user'));    // Admin/User Management routes
-app.use('/expenses', require('./routes/expense')); // Expense Submission/Approval routes
+// ... (Route imports remain the same)
+app.use('/', require('./routes/index'));
+app.use('/users', require('./routes/user'));
+app.use('/expenses', require('./routes/expense'));
 
 // --- SERVER START ---
-app.listen(PORT, console.log(`Server started on port ${PORT}. Use MongoDB database.`));
+app.listen(PORT, console.log(`Server started on port ${PORT}.`));
