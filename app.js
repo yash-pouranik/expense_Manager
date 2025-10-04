@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 
 // --- ROUTE IMPORTS (Controller) ---
 // ... (Route imports remain the same)
-// app.use('/', require('./routes/index'));
+app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/user'));
 // app.use('/expenses', require('./routes/expense'));
 
