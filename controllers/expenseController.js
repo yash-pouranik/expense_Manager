@@ -77,7 +77,7 @@ exports.handleSubmitExpense = async (req, res) => {
         }
 
         const newExpense = new Expense({
-            employee: employeeId,
+            employee: req.user._id,
             company: companyId,
             amount: parsedAmount,
             currency,

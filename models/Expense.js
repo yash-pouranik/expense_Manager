@@ -8,7 +8,7 @@ const approvalHistorySchema = new mongoose.Schema({
 });
 
 const expenseSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    employee: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 🔑 FIXED
     company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
     amount: { type: Number, required: true },
     category: { type: String, required: true },
@@ -16,10 +16,7 @@ const expenseSchema = new mongoose.Schema({
     date: { type: Date, required: true },
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
 
-    // --- NEW FIELDS ---
-    // Tracks whose turn it is to approve the expense
     currentApprover: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    // A log of everyone who has already approved or rejected
     approvalHistory: [approvalHistorySchema]
 }, { timestamps: true });
 
