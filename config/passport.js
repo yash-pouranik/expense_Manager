@@ -11,7 +11,6 @@ module.exports = function(passport) {
             User.findOne({ username: username })
                 .then(user => {
                     if (!user) {
-                        // User not found
                         return done(null, false, { message: 'That username is not registered' });
                     }
 
@@ -20,10 +19,8 @@ module.exports = function(passport) {
                         if (err) throw err;
 
                         if (isMatch) {
-                            // Passwords match, authentication successful
                             return done(null, user);
                         } else {
-                            // Passwords do not match
                             return done(null, false, { message: 'Password incorrect' });
                         }
                     });
@@ -40,7 +37,8 @@ module.exports = function(passport) {
     // Deserialize User (retrieve user data from session ID)
     passport.deserializeUser(async (id, done) => {
         try {
-            const user = await User.findById(id).exec();
+            // CRITICAL FIX: Use .populate('company') to fetch the full company document
+            const user = await User.findById(id).populate('company').exec(); 
             done(null, user);
         } catch (err) {
             done(err, null);
