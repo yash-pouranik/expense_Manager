@@ -1,0 +1,45 @@
+<%- include('../partials/messages') %>
+
+<div class="row mt-5">
+    <div class="col-md-6 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Company Setup & Admin Signup</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Create the first Admin user. A new Company will be auto-created for this environment.</p>
+                <hr>
+
+                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <% errors.forEach(function(error) { %>
+                            <p class="mb-0"><%= error.msg %></p>
+                        <% }); %>
+                    </div>
+                <% } %>
+
+                <form action="/signup" method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Admin Username</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                            value="<%= typeof username != 'undefined' ? username : '' %>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="password2" name="password2" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-success me-2">Register Company & Admin</button>
+                    <a href="/login" class="btn btn-secondary">Already have an account? Login</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
