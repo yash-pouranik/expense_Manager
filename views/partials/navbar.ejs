@@ -1,58 +1,134 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/dashboard">Odoo Expenses</a>
+<style>
+    /* 1. EMBEDDED CSS FOR MINIMALIST FLAT LOOK */
+    :root {
+        --accent-color: #008cba; /* A professional teal/cyan accent */
+        --text-color: #333;
+        --bg-color: #f7f9fc; /* Very light, off-white background */
+    }
+
+    .navbar-flat-custom {
+        background-color: var(--bg-color); 
+        border-bottom: 3px solid var(--accent-color); /* Strong accent line */
+        padding: 0.5rem 0;
+    }
+    
+    .navbar-flat-custom .navbar-brand {
+        color: var(--accent-color); 
+        font-weight: 800;
+        font-size: 1.3rem;
+        letter-spacing: 1px;
+    }
+
+    /* Primary Nav Links Styling */
+    .navbar-flat-custom .navbar-nav .nav-link {
+        color: var(--text-color);
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-radius: 2px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .navbar-flat-custom .navbar-nav .nav-link:hover {
+        color: var(--accent-color);
+        background-color: rgba(0, 140, 186, 0.08); /* Light accent background */
+    }
+
+    /* Role-based Accents - used for icons/text */
+    .text-role-accent-employee { color: #28a745 !important; }
+    .text-role-accent-manager { color: #ffc107 !important; }
+    .text-role-accent-admin { color: #17a2b8 !important; }
+    
+    /* Login/Signup Buttons */
+    .btn-accent {
+        background-color: var(--accent-color);
+        color: white;
+        border-color: var(--accent-color);
+        transition: background-color 0.2s;
+    }
+    .btn-accent:hover {
+        background-color: #00779d; /* Slightly darker hover */
+        border-color: #00779d;
+        color: white;
+    }
+    
+    /* 2. SIMPLE ANIMATION FOR LINKS/BUTTONS */
+    .animated-link:hover {
+        transform: translateY(-1px);
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-flat-custom shadow-sm">
+    <div class="container-fluid container">
+        
+        <a class="navbar-brand" href="<%= user ? '/dashboard' : '/' %>">
+            <i class="fas fa-receipt me-2"></i> 
+            Expense.io
+        </a>
+        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon" style="color: var(--text-color);"></span>
         </button>
+        
         <div class="collapse navbar-collapse" id="navbarNav">
+            
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <% if (user) { %>
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                        <a class="nav-link animated-link" href="/dashboard"><i class="fas fa-chart-line me-1"></i> Dashboard</a>
                     </li>
                     
                     <% if (user.role === 'Employee') { %>
                         <li class="nav-item">
-                            <a class="nav-link" href="/expenses/submit">Submit Expense</a>
+                            <a class="nav-link animated-link" href="/expenses/submit"><i class="fas fa-plus-square text-role-accent-employee me-1"></i> New Claim</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/expenses/history">My History</a>
+                            <a class="nav-link animated-link" href="/expenses/history"><i class="fas fa-archive me-1"></i> History</a>
                         </li>
                     <% } %>
 
                     <% if (user.role === 'Manager' || user.role === 'Admin') { %>
                         <li class="nav-item">
-                            <a class="nav-link" href="/expenses/pending">Pending Approvals</a>
+                            <a class="nav-link animated-link" href="/expenses/pending"><i class="fas fa-clipboard-check text-role-accent-manager me-1"></i> Approvals</a>
                         </li>
                     <% } %>
                     
                     <% if (user.role === 'Admin') { %>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/users/new">Manage Users</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/rules/config">Config Rules</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle animated-link" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-sliders-h text-role-accent-admin me-1"></i> System
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <li><a class="dropdown-item" href="/users/new">Manage Users</a></li>
+                                <li><a class="dropdown-item" href="/rules/config">Config Rules</a></li>
+                            </ul>
                         </li>
                     <% } %>
                 <% } %>
             </ul>
             
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ms-auto">
                 <% if (user) { %>
-                    <li class="nav-item">
-                        <span class="navbar-text me-3">
-                            Logged in as: <strong><%= user.username %></strong> (<%= user.role %>)
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-danger" href="/logout">Logout</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i> 
+                            <%= user.username %> (<span class="text-secondary"><%= user.role %></span>)
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><span class="dropdown-item-text">Role: <strong class="text-dark"><%= user.role %></strong></span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger animated-link" href="/logout"><i class="fas fa-sign-out-alt me-1"></i> Logout</a></li>
+                        </ul>
                     </li>
                 <% } else { %>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light me-2" href="/login">Login</a>
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-secondary animated-link" href="/login">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-warning" href="/signup">Signup</a>
+                        <a class="btn btn-accent animated-link" href="/signup">
+                            <i class="fas fa-user-plus me-1"></i> Sign Up
+                        </a>
                     </li>
                 <% } %>
             </ul>
