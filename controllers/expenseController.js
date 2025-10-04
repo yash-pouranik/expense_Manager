@@ -9,20 +9,67 @@ const EXCHANGE_RATES = {
     'GBP': 0.81,
     'INR': 83.2,
 };
-
 function convertCurrency(expenseCurrency, amount, targetCurrency) {
+    if (!expenseCurrency || !targetCurrency) {
+        console.error("Currency missing:", { expenseCurrency, targetCurrency });
+        return amount; // fallback: original amount return
+    }
+
     const source = expenseCurrency.toUpperCase();
     const target = targetCurrency.toUpperCase();
 
     if (!EXCHANGE_RATES[source] || !EXCHANGE_RATES[target]) {
         console.error(`Currency conversion failed: ${source} → ${target}`);
-        return null;
+        return amount; // fallback without conversion
     }
 
     const amountInUSD = amount / EXCHANGE_RATES[source];
     const convertedAmount = amountInUSD * EXCHANGE_RATES[target];
     return parseFloat(convertedAmount.toFixed(2));
 }
+
+exports.getPendingApprovals = async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const company = await Company.findById(req.user.company);
+
+        // ✅ FIX: safe default
+        const targetCurrency = company?.currency || 'USD';
+
+        let pendingExpenses = [];
+        if (req.user.role === 'Admin') {
+            pendingExpenses = await Expense.find({ company: company._id, status: 'Pending' })
+                .populate('employee', 'username email');
+        } else if (req.user.role === 'Manager') {
+            const teamEmployees = await User.find({ manager: currentUserId }).select('_id');
+            const teamIds = teamEmployees.map(e => e._id);
+
+            pendingExpenses = await Expense.find({ employee: { $in: teamIds }, status: 'Pending' })
+                .populate('employee', 'username email');
+        }
+
+        for (let expense of pendingExpenses) {
+            expense.convertedAmount = convertCurrency(
+                expense.currency,
+                expense.amount,
+                targetCurrency
+            );
+        }
+
+        res.render('expenses/pending', {
+            title: 'Pending Approvals',
+            expenses: pendingExpenses || [],
+            formatDate: (date) => new Date(date).toLocaleDateString(),
+            targetCurrency,
+        });
+    } catch (err) {
+        console.error('Error fetching pending approvals:', err);
+        req.flash('error_msg', 'Error while loading approvals.');
+        res.redirect('/dashboard');
+    }
+};
+
+
 
 // --- EMPLOYEE ROLE ---
 

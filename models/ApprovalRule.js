@@ -1,13 +1,10 @@
-// models/Approval.js
 const mongoose = require('mongoose');
 
-const approvalSchema = new mongoose.Schema({
-  expense: { type: mongoose.Schema.Types.ObjectId, ref: 'Expense', required: true },
-  approver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  level: { type: Number, required: true }, // step number (1 = manager, 2 = finance, etc.)
-  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
-  comments: { type: String },
-  actedAt: { type: Date }
-});
+const approvalRuleSchema = new mongoose.Schema({
+  company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
+  ruleType: { type: String, enum: ['percentage', 'specific', 'hybrid'], required: true },
+  percentageThreshold: { type: Number }, // e.g. 60
+  specificApprovers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+}, { timestamps: true });
 
-module.exports = mongoose.model('Approval', approvalSchema);
+module.exports = mongoose.model('ApprovalRule', approvalRuleSchema);

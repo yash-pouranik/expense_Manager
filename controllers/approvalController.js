@@ -1,51 +1,38 @@
-// controllers/approvalController.js
-const Approval = require('../models/Approval');
 const Expense = require('../models/Expense');
+const ApprovalRule = require('../models/ApprovalRule');
 
-exports.getPendingApprovals = async (req, res) => {
-  try {
-    const approvals = await Approval.find({ approver: req.user._id, status: 'pending' })
-      .populate('expense');
-    res.json(approvals);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+async function checkApprovalRules(expense) {
+    const rules = await ApprovalRule.findOne({ company: expense.company });
+    if (!rules) return false; // no rules defined
 
-exports.approveExpense = async (req, res) => {
-  try {
-    const { approvalId } = req.params;
-    const { comments, action } = req.body; // action = 'approve' | 'reject'
+    const totalApprovals = expense.approvalHistory.filter(h => h.status === 'Approved').length;
+    const totalRejections = expense.approvalHistory.filter(h => h.status === 'Rejected').length;
+    const totalVotes = expense.approvalHistory.length;
 
-    const approval = await Approval.findById(approvalId).populate('expense');
-    if (!approval) return res.status(404).json({ message: 'Approval not found' });
-
-    approval.status = action === 'approve' ? 'approved' : 'rejected';
-    approval.comments = comments;
-    approval.actedAt = new Date();
-    await approval.save();
-
-    // If approved, check if next approver exists
-    if (approval.status === 'approved') {
-      const nextApproval = await Approval.findOne({
-        expense: approval.expense._id,
-        level: approval.level + 1
-      });
-      if (nextApproval) {
-        // send notification to next approver (TODO: integrate mail/sms)
-      } else {
-        // final approval reached
-        approval.expense.status = 'approved';
-        await approval.expense.save();
-      }
-    } else {
-      // Rejected -> update expense status
-      approval.expense.status = 'rejected';
-      await approval.expense.save();
+    if (rules.ruleType === 'percentage') {
+        const percentage = (totalApprovals / totalVotes) * 100;
+        return percentage >= rules.percentageThreshold;
     }
 
-    res.json({ message: `Expense ${approval.status}`, approval });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+    if (rules.ruleType === 'specific') {
+        return expense.approvalHistory.some(h => 
+            rules.specificApprovers.map(String).includes(String(h.approver)) && h.status === 'Approved'
+        );
+    }
+
+    if (rules.ruleType === 'hybrid') {
+        const percentage = (totalApprovals / totalVotes) * 100;
+        const specificApproved = expense.approvalHistory.some(h => 
+            rules.specificApprovers.map(String).includes(String(h.approver)) && h.status === 'Approved'
+        );
+        return (percentage >= rules.percentageThreshold) || specificApproved;
+    }
+
+    return false;
+}
+
+// Inside handleApprovalAction after saving approval
+if (await checkApprovalRules(expense)) {
+    expense.status = 'Approved';
+    await expense.save();
+}
