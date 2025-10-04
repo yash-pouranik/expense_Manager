@@ -1,4 +1,4 @@
-<%- include('./partials/messages') %>
+
 
 <style>
     .stat-card {
@@ -81,7 +81,7 @@
                     <h5 class="card-title text-primary">User Management</h5>
                     <p class="card-text">Create and manage users.</p>
                     <a href="/admin/add/employee" class="btn btn-primary">Add Employee</a>
-                    <a href="/admin/add/manager" class="btn btn-primary mt-2">Add Manager</a>
+                    <a href="/admin/add/manager" class="btn btn-primary ">Add Manager</a>
                 </div>
             </div>
         </div>
@@ -169,7 +169,7 @@
                             <% managers.forEach(manager => { %>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <%= manager.name %>
-                                    <span class="badge bg-primary rounded-pill"><%= manager.email %></span>
+                                    <span class="badge text-muted"><%= manager.email %></span>
                                 </li>
                             <% }) %>
                         <% } else { %>
@@ -189,7 +189,7 @@
                             <% employees.forEach(employee => { %>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <%= employee.name %>
-                                    <span class="badge bg-secondary rounded-pill"><%= employee.email %></span>
+                                    <span class="badge text-muted"><%= employee.email %></span>
                                 </li>
                             <% }) %>
                         <% } else { %>
