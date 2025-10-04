@@ -11,11 +11,17 @@ const EXCHANGE_RATES = {
 };
 
 function convertCurrency(expenseCurrency, amount, targetCurrency) {
+    // CRITICAL FIX: Guard against undefined or null inputs
+    if (!expenseCurrency || !targetCurrency || typeof amount !== 'number') {
+        console.error(`Currency conversion input failed: Received invalid currency or amount.`);
+        return null;
+    }
+    
     const source = expenseCurrency.toUpperCase();
     const target = targetCurrency.toUpperCase();
 
     if (!EXCHANGE_RATES[source] || !EXCHANGE_RATES[target]) {
-        console.error(`Currency conversion failed: ${source} → ${target}`);
+        console.error(`Currency conversion failed: Currencies not supported by mock rates: ${source} → ${target}`);
         return null;
     }
 
@@ -134,8 +140,10 @@ exports.getExpenseHistory = async (req, res) => {
 exports.getPendingApprovals = async (req, res) => {
     try {
         const currentUserId = req.user._id;
+        
         const company = await Company.findById(req.user.company);
-        const targetCurrency = company?.currency || 'USD';
+        // FIX 1: Use the correct model field 'defaultCurrency'
+        const targetCurrency = company?.defaultCurrency || 'USD';
 
         let pendingExpenses = [];
         if (req.user.role === 'Admin') {
