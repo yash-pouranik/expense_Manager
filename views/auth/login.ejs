@@ -1,39 +1,29 @@
-<%- include('../partials/messages') %>
-
-<div class="row mt-5">
-    <div class="col-md-5 mx-auto">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">User Login</h4>
-            </div>
-            <div class="card-body">
-                <p class="text-muted">Log in to your Expense Management system.</p>
-                <hr>
-                
-                <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
-                    <div class="alert alert-danger" role="alert">
-                        <% errors.forEach(function(error) { %>
-                            <p class="mb-0"><%= error.msg %></p>
-                        <% }); %>
-                    </div>
-                <% } %>
-                
-                <form action="/login" method="POST">
-                    
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary me-2">Login</button>
-                    <a href="/signup" class="btn btn-outline-success">New Company? Sign up</a>
-                </form>
-            </div>
-        </div>
+<link rel="stylesheet" href="css/login.css">
+<div class="formwrapper">
+  <div class="formcard">
+    <div class="cardheader">
+      <h4>User Login</h4>
     </div>
+    <div class="cardbody">
+      <%- include('../partials/messages') %>
+      <p class="textmuted">Log in to your Expense Management system.</p>
+      <hr class="line">
+
+      <form action="/login" method="POST">
+        <div class="input">
+          <label for="username" class="formlabel">Username</label>
+          <input type="text" class="formcontrol" id="username" name="username" required>
+
+          <label for="password" class="formlabel">Password</label>
+          <input type="password" class="formcontrol" id="password" name="password" required>
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="btn-login">Login</button>
+            <a href="/signup" class="btn-signup ">New Company? Sign up</a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
